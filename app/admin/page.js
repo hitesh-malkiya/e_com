@@ -8,8 +8,7 @@ import Link from 'next/link'
 import { useSession, signOut } from "next-auth/react"
 import Getproduct from '../components/Getproduct'
 import { getProducts } from '@/lib/Getproduct'
-
-function page() {
+export default function AdminPage() {
   const { data: session } = useSession()
   const [btnactiv, setBtnactiv] = useState(false)
   const [resData, setResData] = useState([])
@@ -231,8 +230,6 @@ function page() {
     </div>
   )
 }
-
-export default page
 
 export const Button = ({ params }) => {
   return (

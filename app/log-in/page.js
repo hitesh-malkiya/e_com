@@ -1,7 +1,7 @@
 
 'use client';
 import { useSession, signIn, signOut } from "next-auth/react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 
 export default function Component() {
@@ -9,14 +9,7 @@ export default function Component() {
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   
-  useEffect(() => {
-    if (session) {
-      // Save user data to database when they log in
-      saveUserToDatabase(session.user)
-    }
-  }, [session])
-
-  const saveUserToDatabase = async (user) => {
+  const saveUserToDatabase = useCallback(async (user) => {
     setIsSaving(true)
     try {
       const response = await fetch('/api/user', {
@@ -44,7 +37,14 @@ export default function Component() {
       console.error('Error saving user:', error)
       setIsSaving(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    if (session) {
+      // Save user data to database when they log in
+      saveUserToDatabase(session.user)
+    }
+  }, [session, saveUserToDatabase])
   
   if(session) {
     return (
