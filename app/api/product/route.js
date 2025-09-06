@@ -1,16 +1,62 @@
 import Product from '../../../modules/product'
 import connectDB from '../../../lib/mongoose'
 import { NextResponse } from 'next/server'
+import { writeFile, mkdir } from 'fs/promises'
+import { join } from 'path'
 
-export async function POST(request){
+
+
+export async function POST(request,){
+
+    console.log(request);
+    
     try{
         await connectDB();
-        const {name, price, image, category} = await request.json();
-        const product = await Product.create({name, price, image, category});
+        
+        // Parse form data
+        const formData = await request.formData();
+        const name = formData.get('name');
+        const price = formData.get('price');
+        const category = formData.get('category');
+        const imageFile = formData.get('image');
+        const userName = formData.get('userName')
+        const admin = formData.get('admin')
+        if (!imageFile) {
+            return NextResponse.json({message: 'No image file provided'}, {status: 400});
+        }
+
+        // Create uploads directory if it doesn't exist
+        const uploadsDir = join(process.cwd(), 'public', 'uploads', userName || 'default');
+        try {
+            await mkdir(uploadsDir, { recursive: true });
+        } catch (error) {
+            // Directory already exists
+        }
+
+        // Generate unique filename
+        const timestamp = Date.now();
+        const filename = `${timestamp}-${imageFile.name}`;
+        const filepath = join(uploadsDir, filename);
+
+        // Save file
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        await writeFile(filepath, buffer);
+
+        // Create image URL
+        const imageUrl = `/uploads/${userName || 'default'}/${filename}`;
+
+        const product = await Product.create({
+            name, 
+            price: parseFloat(price), 
+            image: imageUrl, 
+            category,
+            admin: admin
+        });
+        
         return NextResponse.json(product);
     }catch(error){
-  
-        
+        console.error('Error creating product:', error);
         return NextResponse.json({message: error.message}, {status: 500});
     }
 }
@@ -37,7 +83,7 @@ export async function GET(request) {
         // Get query parameters from URL
         const { searchParams } = new URL(request.url);
         const category = searchParams.get('category');
-        const name = searchParams.get('name');
+       const admin =searchParams.get('admin')
         const minPrice = searchParams.get('minPrice');
         const maxPrice = searchParams.get('maxPrice');
         const search = searchParams.get('search');
@@ -45,7 +91,7 @@ export async function GET(request) {
         const page = parseInt(searchParams.get('page')) || 1;
         const sortBy = searchParams.get('sortBy') || 'name';
         const sortOrder = searchParams.get('sortOrder') || 'asc';
-        
+        const id =searchParams.get('id');
         // Build query object
         let query = {};
         
@@ -65,7 +111,12 @@ export async function GET(request) {
         if (search) {
             query.name = { $regex: search, $options: 'i' };
         }
-     
+        if (id) {
+            query._id = id;
+        }
+     if(admin){
+        query.admin= admin
+     }
      
         
         // Build sort object
@@ -99,6 +150,6 @@ export async function GET(request) {
         });
         
     } catch (error) {
-        return NextResponse.json({message: error.message}, {status: 500});
+        return NextResponse.json('not found');
     }
 }

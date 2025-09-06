@@ -23,6 +23,23 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  userName: {
+    type: String,
+    trim: true,
+    minlength: [2, "Username must be at least 2 characters long"],
+    maxlength: [30, "Username cannot exceed 30 characters"],
+    unique: true,
+    sparse: true,
+  },
+  adtocard: {
+    type: Array,
+    default: [],
+  },
+  password: {
+    type: String,
+    required: false,
+    select: false,
+  },
   firstLogin: {
     type: Boolean,
     default: true,

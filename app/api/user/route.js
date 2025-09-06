@@ -3,8 +3,12 @@ import mongoose from 'mongoose'
 import User from '@/modules/user'
 
 export async function POST(request) {
+  console.log(request);
+  
   try {
     const body = await request.json()
+    console.log(body);
+    
     const { email, name, image } = body
 
     if (!email || !name) {
@@ -33,6 +37,7 @@ export async function POST(request) {
           email: user.email,
           name: user.name,
           image: user.image,
+          userName: user.userName,
           isAdmin: user.isAdmin,
           firstLogin: user.firstLogin
         }
@@ -65,7 +70,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("User API Error:", error)
     return NextResponse.json(
-      { message: "Internal server error" },
+      { message: "Internal servereeeeeeeeeeeeeeeeee error" },
       { status: 500 }
     )
   }

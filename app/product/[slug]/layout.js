@@ -5,7 +5,7 @@ export const metadata = {
   description: 'Browse products by category',
 };
 
-export default function CategoryLayout({ children,}) {
+export default function CategoryLayout({ children}) {
   return (
    <div>
     {children}

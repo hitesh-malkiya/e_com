@@ -1,6 +1,9 @@
 import React from 'react'
 
 export const Home = () => {
+
+
+ 
   return (
     <section className="relative bg-gradient-to-r from-blue-600 to-purple-700 text-white">
     <div className="container mx-auto px-4 py-20">

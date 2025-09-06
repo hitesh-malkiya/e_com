@@ -7,8 +7,17 @@ html, body {
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
+
+:root{
+  --text-color: #F4F1DE;
+--bg-color: #142130;
+--sec-bg-color: #262840;
+--accent-color: #3FBF9D; /* Use this for buttons, shadows, hover */
+
+
+}
 body{
-  max-width: 1200px !important;
+ 
   margin: 0 auto;
 }
 /* Remove default link styling */
@@ -29,4 +38,7 @@ ul, ol {
   padding: 0;
 }
 
+.scrollbar-none::-webkit-scrollbar {
+  display: none; 
+}
 

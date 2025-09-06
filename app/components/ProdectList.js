@@ -1,6 +1,7 @@
 import React from 'react'
 import Getproduct from './Getproduct';
 
+
 function prodectList({ productData }) {
 
   return (
@@ -9,9 +10,10 @@ function prodectList({ productData }) {
         Featured Products
       </h2>
 
-      <Getproduct productData={productData} >
+      <Getproduct productData={productData}  >
         <button className=" bg-amber-50 text-black  px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition duration-300">
-          Add to Cart
+            Add to Cart
+      
         </button></Getproduct>
     </>
   )

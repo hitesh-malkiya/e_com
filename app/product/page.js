@@ -1,14 +1,14 @@
 import React from 'react'
 import Product from '../components/Product'
+async function Page({ searchParams }) {
+  const queryString = await searchParams
 
-function page() {
+
+  
   return (
     <div>
-      
-  <Product />
-    
-    </div>
+      <Product queryStringURL={queryString} />
+      </div>
   )
 }
-
-export default page
+export default Page
