@@ -9,21 +9,32 @@ html, body {
 }
 
 :root{
-  --text-color: #F4F1DE;
---bg-color: #142130;
---sec-bg-color: #262840;
---accent-color: #3FBF9D; /* Use this for buttons, shadows, hover */
+  /* Base Colors */
+  --text-color: #080808;
+  --bg-color: #edecec;
+  --sec-bg-color: #d1cdc8c7;
+  --accent-color: #EBCB8B; 
+  --sec-accent-color: #8A4F7D;
 
+  /* Product Card Variables */
 
+  --card-shadow: 0 4px 6px 3px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --card-shadow-hover: 0 20px 25px 5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --card-border-radius: 12px;
+  --card-padding: 1.5rem;
+  
+
+  /* Transitions */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.3s ease-in-out;
+  --transition-slow: 0.5s ease-in-out;
 }
 body{
  
   margin: 0 auto;
 }
 /* Remove default link styling */
-a {
-  text-decoration: none;
-}
+
 
 /* Remove default button styling */
 button {
@@ -32,11 +43,7 @@ button {
 }
 
 /* Remove default list styling */
-ul, ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+
 
 .scrollbar-none::-webkit-scrollbar {
   display: none; 

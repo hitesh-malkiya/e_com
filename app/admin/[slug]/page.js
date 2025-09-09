@@ -2,7 +2,7 @@
 
 
 import { getServerSession } from "next-auth"
-import Header from './Header'
+import Header from '../../user/Header'
 import FormPage from './FormPage'
 import ProductsList from './ProductsList'
 

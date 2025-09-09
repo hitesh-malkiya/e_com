@@ -1,5 +1,3 @@
-
-
 import { authOptions } from "../api/auth/[...nextauth]/route"
 import NavbarUi from "./NavbarUi"
 import { getServerSession } from "next-auth"

@@ -19,10 +19,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  isAdmin: {
-    type: Boolean,
-    default: false,
-  },
   userName: {
     type: String,
     trim: true,
@@ -32,6 +28,10 @@ const userSchema = new mongoose.Schema({
     sparse: true,
   },
   adtocard: {
+    type: Array,
+    default: [],
+  },
+  oder: {
     type: Array,
     default: [],
   },

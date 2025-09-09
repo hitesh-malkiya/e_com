@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Loading() {
 
-  console.log("loading page load");
+
   
   return (
     <section className="py-16 bg-gray-50">

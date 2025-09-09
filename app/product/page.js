@@ -1,13 +1,14 @@
 import React from 'react'
-import Product from '../components/Product'
+
+import Categories from '../components/Categories'
 async function Page({ searchParams }) {
   const queryString = await searchParams
 
 
   
   return (
-    <div>
-      <Product queryStringURL={queryString} />
+    <div className=' mt-24'>
+<Categories searchParams={queryString} />
       </div>
   )
 }

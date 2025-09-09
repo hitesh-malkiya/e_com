@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server'
 import mongoose from 'mongoose'
 import User from '@/modules/user'
+import connectDB from '@/lib/mongoose';
 
 export async function POST(request) {
   console.log(request);
-  
+
   try {
     const body = await request.json()
     console.log(body);
-    
+
     const { email, name, image } = body
 
     if (!email || !name) {
@@ -29,7 +30,7 @@ export async function POST(request) {
       user.lastLogin = new Date()
       user.firstLogin = false
       await user.save()
-      
+
       return NextResponse.json({
         message: "User login updated",
         user: {
@@ -61,7 +62,6 @@ export async function POST(request) {
           email: newUser.email,
           name: newUser.name,
           image: newUser.image,
-          isAdmin: newUser.isAdmin,
           firstLogin: newUser.firstLogin
         }
       }, { status: 201 })
@@ -71,6 +71,37 @@ export async function POST(request) {
     console.error("User API Error:", error)
     return NextResponse.json(
       { message: "Internal servereeeeeeeeeeeeeeeeee error" },
+      { status: 500 }
+    )
+  }
+}
+
+
+export async function GET(request) {
+  try {
+    const userName = request.headers.get('x-username') || request.headers.get('username')
+
+    if (!userName) {
+      return NextResponse.json(
+        { message: 'userName is required in headers (x-username or username)' },
+        { status: 400 }
+      )
+    }
+
+    await connectDB();
+    const user = await User.findOne({ userName })
+
+    if (!user) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({ products: user.adtocard })
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'Internal server error' },
       { status: 500 }
     )
   }

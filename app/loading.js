@@ -3,7 +3,7 @@ import React from 'react'
 function Loading() {
 
 
-  console.log("home page loading is working on this siw");
+
   
   return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">

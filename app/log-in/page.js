@@ -53,7 +53,7 @@ console.log( 'log in respons' , response);
     });
   
     if (res?.ok && !res.error) {
-      router.push(`/admin${session?.user?.userName }`); // or wherever
+      router.push(`/user`); // or wherever
     } else {
       setMessage('Invalid username or password');
     }

@@ -6,24 +6,33 @@ import { join } from 'path'
 
 
 
-export async function POST(request,){
+export async function POST(request){
 
-    console.log(request);
+    console.log('reeeeeeeeeeeeeeeee' , request);
     
     try{
         await connectDB();
         
         // Parse form data
         const formData = await request.formData();
+        
+
+        const stock = formData.get('stock');
+        const mainDes = formData.get('mainDes');
+        const brand = formData.get('brand');
         const name = formData.get('name');
         const price = formData.get('price');
         const category = formData.get('category');
         const imageFile = formData.get('image');
         const userName = formData.get('userName')
         const admin = formData.get('admin')
+        const mrp = formData.get('mrp')
+        const moreString = formData.get('more')
+        const more = moreString ? JSON.parse(moreString) : []
         if (!imageFile) {
             return NextResponse.json({message: 'No image file provided'}, {status: 400});
         }
+
 
         // Create uploads directory if it doesn't exist
         const uploadsDir = join(process.cwd(), 'public', 'uploads', userName || 'default');
@@ -49,9 +58,14 @@ export async function POST(request,){
         const product = await Product.create({
             name, 
             price: parseFloat(price), 
+            mrp,
             image: imageUrl, 
             category,
-            admin: admin
+            stock,
+            admin,
+            more,
+            mainDes,
+            brand
         });
         
         return NextResponse.json(product);
@@ -76,8 +90,8 @@ await connectDB()
 export async function GET(request) {
     try {
         await connectDB();
-        // If a 'name' query parameter is provided, filter products by exact name match
-     
+       
+    
        
     
         // Get query parameters from URL
@@ -87,8 +101,8 @@ export async function GET(request) {
         const minPrice = searchParams.get('minPrice');
         const maxPrice = searchParams.get('maxPrice');
         const search = searchParams.get('search');
-        const limit = parseInt(searchParams.get('limit')) || 10;
-        const page = parseInt(searchParams.get('page')) || 1;
+        const limit = parseInt(searchParams.get('limit'));
+        const page = parseInt(searchParams.get('page'));
         const sortBy = searchParams.get('sortBy') || 'name';
         const sortOrder = searchParams.get('sortOrder') || 'asc';
         const id =searchParams.get('id');
@@ -150,6 +164,8 @@ export async function GET(request) {
         });
         
     } catch (error) {
-        return NextResponse.json('not found');
+      
+        
+        return NextResponse.json('not found , ' , error);
     }
 }

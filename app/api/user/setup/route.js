@@ -55,7 +55,7 @@ export async function POST(request) {
         email: user.email,
         name: user.name,
         userName: user.userName,
-        isAdmin: user.isAdmin,
+       
         firstLogin: user.firstLogin
       }
     })

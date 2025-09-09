@@ -48,7 +48,7 @@ export async function POST(request) {
         name: user.name,
         userName: user.userName,
         image: user.image,
-        isAdmin: user.isAdmin,
+  
         firstLogin: user.firstLogin
       }
     })

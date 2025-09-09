@@ -22,7 +22,7 @@ function page() {
 
 useEffect(() => {
     if (session?.user?.userName) {
-        router.push(`/admin/${session.user.userName}`);
+        router.push(`/user`);
     }
 }, [session, router]);
 
@@ -39,7 +39,7 @@ useEffect(() => {
                 password: formData.current.password.value
             })
             formData.current.reset();
-            router.push(`/admin/${response.data.user.userName}`);
+            router.push(`/user`);
             setBtnactiv(false)
             setMessage('Username and password set successfully!')
        

@@ -1,23 +1,23 @@
 import { getProductsSort } from '@/lib/Getproduct';
 import React from 'react'
 import Getproduct from './Getproduct';
+import { AddToCartButton } from './AddToCartButton';
 
 async function Categorie({categorieName , searchParams}) {
 
 
-
-    const tamp = await searchParams
+  const tamp = await searchParams
     const queryString = new URLSearchParams(tamp).toString();
-  
-    console.log(queryString);
-  console.log(categorieName);
+
   
     let productsData = [];
     try {
       const res = await getProductsSort(queryString, categorieName , 'category');
       productsData = res?.data?.products || [];
+
+      
     } catch (err) {
-      console.log('Product: fetch error', err);
+
       productsData = [];
     }
 
@@ -27,12 +27,9 @@ async function Categorie({categorieName , searchParams}) {
 
 
     <div>
-          <h3 className=' w-full'>{categorieName}</h3>
+          <h3 className="py-[1lh] w-full text-2xl text-center after:content-[''] after:block after:w-[80px] after:h-[5px] after:mx-auto after:mt-[10px] after:rounded-[10px] after:bg-[var(--sec-accent-color)]">{categorieName}</h3>
           <Getproduct productData={productsData}>
-            <button className=" bg-amber-50 text-black  px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition duration-300">
-              Add to Cart
-
-            </button>
+            <AddToCartButton />
           </Getproduct>
         </div>
   )
