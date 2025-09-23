@@ -18,8 +18,9 @@ export default async function page({ searchParams, params }) {
   } catch {
     session = null
   }
-console.log(session);
 
+
+console.log(session);
 
 
 
@@ -40,7 +41,7 @@ console.log(session);
         {/* Add Product Form */}
       
         {/* Products List */}
-        <ProductsList queryStringURL={queryString}  userName={'hitesh'}/>
+        <ProductsList queryStringURL={queryString}  userName={session?.user?.userName}/>
       </div>
     </div>
   )

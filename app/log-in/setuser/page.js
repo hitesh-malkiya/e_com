@@ -18,6 +18,7 @@ function page() {
 
 
 
+console.log(session);
 
 
 useEffect(() => {
@@ -43,7 +44,7 @@ useEffect(() => {
             setBtnactiv(false)
             setMessage('Username and password set successfully!')
        
-            // Redirect to home page after successful setu
+
             
         } catch (error) {
             setMessage(error.response?.data?.message || 'An error occurred')
@@ -53,8 +54,6 @@ useEffect(() => {
 
 
     if(session?.user?.userName){
-
-        console.log(status);
         
         return(
           <Loading/>

@@ -6,7 +6,7 @@ function Getproduct(params) {
 
 
     const { productData = [], children } = params
-console.log(children);
+
 
 
     return (
@@ -58,10 +58,17 @@ console.log(children);
                             <span className="text-lg font-semibold text-[var(--text-color)]">₹{price}</span>
                             <span className="text-xs font-semibold text-[var(-sec-accent-color)] bg-[var(--accent-color)] px-2 py-0.5 rounded">{discountPercent}% OFF</span>
                         </div>
-                        <div className="mt-auto">
-                            {React.cloneElement(children, { 
-                                productId: product._id, 
-                            })}
+                        <div className="mt-auto flex justify-start gap-3 items-center">
+                            {React.Children.map(children, (child) =>
+                                React.isValidElement(child)
+                                    ? React.cloneElement(
+                                        child,
+                                        child.props && child.props.productId !== undefined
+                                            ? {}
+                                            : { productId: product._id }
+                                      )
+                                    : child
+                            )}
                         </div>
 
 

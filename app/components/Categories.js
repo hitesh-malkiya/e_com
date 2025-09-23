@@ -6,7 +6,8 @@ import { getProducts } from '@/lib/Getproduct';
 
 import Categorie from './Categorie';
 import Getproduct from './Getproduct';
-import { Button } from './Botton';
+import { AddToCartButton } from './AddToCartButton';
+
 
 async function Categories({ searchParams }) {
 
@@ -39,6 +40,7 @@ async function Categories({ searchParams }) {
          <SortSpan dataName={'men'} />
          <SortSpan dataName={'women'} /> 
          <SortSpan dataName={'kids'} />
+         
 
         </div>
       </div>
@@ -46,7 +48,7 @@ async function Categories({ searchParams }) {
         {queryString ? <>
           <h3 className="py-[1lh] w-full text-2xl text-center after:content-[''] after:block after:w-[80px] after:h-[5px] after:mx-auto after:mt-[10px] after:rounded-[10px] after:bg-[var(--sec-accent-color)]">{products[0].category}</h3>
         <Getproduct productData ={products}  >
-        <Button link={'product'} data={'Add to Cart'} variant="primary" />
+        <AddToCartButton />
         </Getproduct>
         </> : (
           <>

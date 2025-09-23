@@ -1,9 +1,12 @@
 
 
-import { Button } from '@/app/components/Botton';
+
 import Getproduct from '@/app/components/Getproduct';
-import { getCardProduct, getProducts, getProductsSort } from '@/lib/Getproduct'
-import { AddToCartButton } from '../components/AddToCartButton';
+import { getCardProduct, getProductsSort } from '@/lib/Getproduct'
+ 
+import DeletCard from '../components/DeletCard';
+import Noproduct from '../components/Noproduct';
+import { Buybtn } from '../components/Buybtn';
 
 async function ProductsList({ queryStringURL, userName }) {
 
@@ -18,7 +21,7 @@ async function ProductsList({ queryStringURL, userName }) {
         const res = await getCardProduct(queryString, userName)
         cardProduct = res.data.products
     } catch (err) {
-        console.log('Product: fetch error', err);
+
         cardProduct = [];
     }
 
@@ -29,7 +32,7 @@ async function ProductsList({ queryStringURL, userName }) {
                 products = products.concat(res.data.products);
             }
         } catch (err) {
-            console.log('Product: fetch error', err);
+
             products = [];
         }
     }
@@ -37,10 +40,17 @@ async function ProductsList({ queryStringURL, userName }) {
     return (
         <div className="bg-white rounded-2xl shadow-xl p-8">
 
+            {products.length === 0 ? (
+                <Noproduct data="yor card is amty" p="No products found in your cart." />
+            ) : (
+                <Getproduct productData={products}>
+                    <Buybtn />
+                    <DeletCard data={"delet"} />
+                </Getproduct>
 
-            <Getproduct productData={products}>
-                <AddToCartButton />
-            </Getproduct>
+            )
+
+            }
         </div>
     )
 }

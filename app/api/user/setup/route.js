@@ -8,7 +8,7 @@ export async function POST(request) {
   
     
     const body = await request.json()
-    console.log('body' , body);
+    
     const { email, userName, password } = body
 
     if (!email || !userName || !password) {
@@ -61,7 +61,7 @@ export async function POST(request) {
     })
 
   } catch (error) {
-    console.error("User Setup API Error:", error)
+
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

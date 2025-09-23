@@ -12,7 +12,7 @@ export default function Component() {
 
  const { data: session } = useSession()
 const {status} = useSession()
-
+console.log(session);
 
 
 
@@ -30,10 +30,10 @@ const {status} = useSession()
         name: user.name,
         image: user.image
       });
-console.log( 'log in respons' , response);
+
 
     } catch (error) {
-      console.log('Error saving user:', error);
+
     }
   }, [router]);
 
@@ -63,10 +63,10 @@ console.log( 'log in respons' , response);
   
 
   useEffect(() => {
-    console.log(session);
+
     
     if (session) {
-      console.log(session);
+
       
       saveUserToDatabase(session.user)
       router.push('/log-in/setuser');

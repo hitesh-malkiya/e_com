@@ -2,13 +2,14 @@
 
 
 import { getServerSession } from "next-auth"
-import Header from '../../user/Header'
+import Header from './Header'
 import FormPage from './FormPage'
-import ProductsList from './ProductsList'
+
 
 import { redirect } from 'next/navigation';
 import Loading from "./loading"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import Adminregister from "./Adminregister"
 
 
 export default async function page({ searchParams, params }) {
@@ -26,29 +27,32 @@ export default async function page({ searchParams, params }) {
     session = null
   }
 
-  if (session?.user?.userName !== slug) {
-    // Server Component: perform redirect using Next.js not client-side JS
 
-    redirect('/log-in');
 
-    return (
+if (session.user.admin.userName !== slug) {
+
   
-     <Loading />
-
-    )
-  }
-
+  return (
+    <div className="min-h-screen bg-gradient-to-br mt-24 bg-[var(--sec-bg-color)] py-8 px-4">
+      <div className="">
+        <Adminregister/>
+      </div>
+    </div>
+  )
+}
 
   return (
-    <div className="min-h-screen bg-gradient-to-br mt-46 from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br mt-24 bg-[var(--sec-bg-color)] py-8 px-4">
+      <div className="">
         {/* Header */}
         <Header userName={session?.user?.name} />
 
+        {/* Debug Admin Data */}
+   
         {/* Add Product Form */}
         <FormPage slug={slug} />
         {/* Products List */}
-        <ProductsList queryStringURL={queryString} />
+      
       </div>
     </div>
   )

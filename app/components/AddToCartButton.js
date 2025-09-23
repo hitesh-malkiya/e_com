@@ -10,30 +10,29 @@ export const AddToCartButton = ({ productId}) => {
 
 
     const { data: session } = useSession()
-    const {status} = useSession()
+
   const user = session?.user?.userName
     const handleAddToCart = async () => {
         if (!productId) {
             alert('Product ID is missing')
             return
         }
-
+        if (!user) {
+            alert('login first ')
+            return
+        }
         setLoading(true)
-
         try {
 
-
-
-
-
-            // Call the API to add item to cart using axios
             const response = await axios.put('/api/user/card', {
                 userName:user,
                 id: productId
             })
 
             if (response?.status === 200) {
-                alert('Added to cart')
+                console.log(response);
+                
+                alert(response?.data?.message)
             }
           
 
@@ -52,6 +51,7 @@ export const AddToCartButton = ({ productId}) => {
     return (
         <Button
             data={loading ? 'Adding...' : 'Add to Cart'}
+            size='small'
             variant="primary"
             onClick={handleAddToCart}
             type="button"

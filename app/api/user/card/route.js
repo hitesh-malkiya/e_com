@@ -45,3 +45,59 @@ export async function PUT(req) {
         )
     }
 }
+
+
+
+export async function DELETE(req) {
+	try {
+		await connectDB()
+
+		let userName = null
+		let id = null
+		
+			const body = await req.json()
+			userName = body?.userName ?? null
+			id = body?.id ?? null
+		
+console.log(userName , id);
+
+
+		if (!userName || !id) {
+			return NextResponse.json(
+				{ message: "Missing userName or id" },
+				{ status: 400 }
+			)
+		}
+
+		const user = await User.findOne({ userName })
+		if (!user) {
+			return NextResponse.json(
+				{ message: "User not found" },
+				{ status: 404 }
+			)
+		}
+
+		if (!Array.isArray(user.adtocard) || user.adtocard.length === 0) {
+			return NextResponse.json({
+				message: "Cart is already empty",
+				cart: []
+			})
+		}
+
+		const beforeLength = user.adtocard.length
+		user.adtocard = user.adtocard.filter(itemId => String(itemId) !== String(id))
+		const removed = user.adtocard.length < beforeLength
+		await user.save()
+
+		return NextResponse.json({
+			message: removed ? "Item removed from cart" : "Item not found in cart",
+			cart: user.adtocard
+		})
+	} catch (error) {
+		return NextResponse.json(
+			{ message: "Internal server error" },
+			{ status: 500 }
+		)
+	}
+}
+

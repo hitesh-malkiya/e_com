@@ -8,7 +8,7 @@ import { join } from 'path'
 
 export async function POST(request){
 
-    console.log('reeeeeeeeeeeeeeeee' , request);
+    
     
     try{
         await connectDB();
@@ -70,7 +70,7 @@ export async function POST(request){
         
         return NextResponse.json(product);
     }catch(error){
-        console.error('Error creating product:', error);
+        
         return NextResponse.json({message: error.message}, {status: 500});
     }
 }

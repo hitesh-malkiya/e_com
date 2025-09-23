@@ -1,288 +1,231 @@
 'use client'
-import React, { useRef } from 'react'
+import { getProductsSort } from '@/lib/Getproduct'
+import axios from 'axios'
+import { useSession } from 'next-auth/react'
+import React, { useEffect, useRef, useState } from 'react'
 
-function page() {
+function page({ searchParams }) {
 
-const orderFormData =useRef(null)
-const handelOrderForm =(e)=>{
-   e.preventDefault()
-   console.log(e);
-   console.log(orderFormData);
-   
-   
-}
+  const orderFormData = useRef(null)
+  const [orderId, setOrderId] = useState(null)
+  const [payAmount, setPayAmount] = useState(0)
+  const [admin, setAdmin] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-    return(
-        <form ref={orderFormData} onClick={(e)=>handelOrderForm(e)}className="space-y-8">
-          {/* Customer Information */}
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <h2 className="text-2xl font-bold text-[var(--text-color)] mb-6 flex items-center">
-              <span className="w-8 h-8 bg-[var(--sec-accent-color)] text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
-              Customer Information
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-[var(--text-color)] mb-2">
-                  First Name *
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-            
+  const { data: session } = useSession()
+
+  const dataGet = async (id) => {
+    try {
+      const tamp = await searchParams
+      const queryString = new URLSearchParams(tamp).toString();
+      console.log(queryString);
+
+      const res = await getProductsSort(queryString, id, 'id');
+
+      const price = res?.data?.products?.[0]?.price;
+      const adminData = res?.data?.products?.[0]?.admin;
+      setAdmin(adminData);
+      console.log(price , adminData);
       
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec-accent-color)] transition-all `}
-                  placeholder="Enter your first name"
-                />
-              
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-[var(--text-color)] mb-2">
-                  Last Name *
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-            
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec-accent-color)] transition-all }`}
-                  placeholder="Enter your last name"
-                />
-                 <p className="text-red-500 text-sm mt-1"></p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-[var(--text-color)] mb-2">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec-accent-color)] transition-all `}
-                  placeholder="Enter your email"
-                />
-               
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-[var(--text-color)] mb-2">
-                  Phone Number *
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-               
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec-accent-color)] transition-all `}
-                  placeholder="Enter your phone number"
-              
-                />
-              </div>
-            </div>
-          </div>
+      return price;
+    } catch (err) {
 
-          {/* Shipping Information */}
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <h2 className="text-2xl font-bold text-[var(--text-color)] mb-6 flex items-center">
-              <span className="w-8 h-8 bg-[var(--accent-color)] text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
-              Shipping Information
-            </h2>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-[var(--text-color)] mb-2">
-                  Street Address *
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec-accent-color)] transition-all `}
-                  placeholder="Enter your street address"
-                />
-             
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-[var(--text-color)] mb-2">
-                    City *
-                  </label>
-                  <input
-                    type="text"
-                    name="city"
-                  
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec-accent-color)] transition-all`}
-                    placeholder="Enter city"
-                  />
-               
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-[var(--text-color)] mb-2">
-                    State *
-                  </label>
-                  <input
-                    type="text"
-                    name="state"
-                   
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec-accent-color)] transition-all`}
-                    placeholder="Enter state"
-                  />
-                 
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-[var(--text-color)] mb-2">
-                    ZIP Code *
-                  </label>
-                  <input
-                    type="text"
-                    name="zipCode"
-                   
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec-accent-color)] transition-all `}
-                    placeholder="Enter ZIP code"
-                  />
-                  
-                </div>
-              </div>
-              
-           
-            </div>
-          </div>
+      return 0;
+    }
+  };
 
-          {/* Order Summary */}
-          {/* <div className="bg-white rounded-xl p-6 shadow-lg">
-            <h2 className="text-2xl font-bold text-[var(--text-color)] mb-6 flex items-center">
-              <span className="w-8 h-8 bg-[var(--sec-accent-color)] text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">3</span>
-              Order Summary
-            </h2>
-            
-            {formData.products.length > 0 ? (
-              <div className="space-y-4">
-                {formData.products.map((product, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-[var(--sec-bg-color)] rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
-                        <span className="text-2xl">📦</span>
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-[var(--text-color)]">{product.name}</h3>
-                        <p className="text-sm text-[var(--text-color)]/70">Qty: {product.quantity}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-[var(--text-color)]">₹{product.price * product.quantity}</p>
-                    </div>
-                  </div>
-                ))}
-                
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-center text-xl font-bold text-[var(--text-color)]">
-                    <span>Total Amount:</span>
-                    <span>₹{formData.totalAmount}</span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-[var(--text-color)]/70">No items in cart</p>
-                <Button link="product" data="Continue Shopping" variant="primary" className="mt-4" />
-              </div>
-            )}
-          </div> */}
 
-          {/* Payment & Shipping Options */}
-          {/* <div className="bg-white rounded-xl p-6 shadow-lg">
-            <h2 className="text-2xl font-bold text-[var(--text-color)] mb-6 flex items-center">
-              <span className="w-8 h-8 bg-[var(--accent-color)] text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">4</span>
-              Payment & Shipping
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-[var(--text-color)] mb-3">
-                  Payment Method
-                </label>
-                {/* <div className="space-y-3">
-                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-[var(--sec-bg-color)] transition-all">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="card"
-                      checked={formData.paymentMethod === 'card'}
-                      onChange={handleInputChange}
-                      className="mr-3"
-                    />
-                    <span>💳 Credit/Debit Card</span>
-                  </label>
-                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-[var(--sec-bg-color)] transition-all">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="upi"
-                      checked={formData.paymentMethod === 'upi'}
-                      onChange={handleInputChange}
-                      className="mr-3"
-                    />
-                    <span>📱 UPI Payment</span>
-                  </label>
-                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-[var(--sec-bg-color)] transition-all">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="cod"
-                      checked={formData.paymentMethod === 'cod'}
-                      onChange={handleInputChange}
-                      className="mr-3"
-                    />
-                    <span>💰 Cash on Delivery</span>
-                  </label>
-                </div> 
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-[var(--text-color)] mb-3">
-                  Shipping Method
-                </label>
-                <div className="space-y-3">
-                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-[var(--sec-bg-color)] transition-all">
-                    <input
-                      type="radio"
-                      name="shippingMethod"
-                      value="standard"
-                      checked={formData.shippingMethod === 'standard'}
-                      onChange={handleInputChange}
-                      className="mr-3"
-                    />
-                    <div>
-                      <span className="font-semibold">Standard Delivery</span>
-                      <p className="text-sm text-[var(--text-color)]/70">5-7 business days - Free</p>
-                    </div>
-                  </label>
-                  <label className="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-[var(--sec-bg-color)] transition-all">
-                    <input
-                      type="radio"
-                      name="shippingMethod"
-                      value="express"
-                      checked={formData.shippingMethod === 'express'}
-                      onChange={handleInputChange}
-                      className="mr-3"
-                    />
-                    <div>
-                      <span className="font-semibold">Express Delivery</span>
-                      <p className="text-sm text-[var(--text-color)]/70">2-3 business days - ₹99</p>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div> */}
-</form>
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const run = async () => {
+        const productId = localStorage.getItem('productId');
+        setOrderId(productId);
+      };
+      run();
+    }
+  }, []);
 
-        
+  useEffect(() => {
+    if (orderId) {
+      const fetchAmount = async () => {
+        const amount = await dataGet(orderId);
+        setPayAmount(amount);
+      };
+      fetchAmount();
+    }
+  }, [orderId]);
+
+  console.log(payAmount);
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve, reject) => {
+      if (typeof window === "undefined") return resolve(false);
+      if (document.getElementById("razorpay-sdk")) return resolve(true);
+      const script = document.createElement("script");
+      script.id = "razorpay-sdk";
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => reject(new Error("Failed to load Razorpay SDK"));
+      document.body.appendChild(script);
+    });
+  };
+
+
+  const handelOrderForm = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const user = session?.user?.name
+      const userName = session?.user?.userName
+      const email = session?.user?.email
+      const quantity =  1
+      const fullName = orderFormData.current.fullName.value
+      const address = orderFormData.current.address.value || ""
+      const city = orderFormData.current.city.value
+      const state = orderFormData.current.state.value
+      const postalCode = orderFormData.current.postalCode.value
+      const phone = orderFormData.current.phone.value
+
+
+    
+      const amount = Math.max(1, Math.round((Number(payAmount) || 0) * quantity)); // in rupees, min ₹1
+      const response = await axios.post('/api/payment', {
+        admin,
+        user,
+        orderId,
+        quantity,
+        userName,
+        email,
+        payAmount: amount,
+        fullName,
+        address,
+        city,
+        state,
+        postalCode,
+        phone,
+      }
+      )
+      console.log("reeeeee" , response);
+      
+      orderFormData.current.reset();
+
+
+      const ok = await loadRazorpayScript();
+      if (!ok) throw new Error("Razorpay SDK failed to load");
+      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      console.log(response);
+
+      const { data } = response
+      const opstion = {
+        key,
+        order_id: data.id,
+        theme: { color: "#111111" },
+        amount: amount,
+        currency: "INR",
+        name: userName,
+        description: "Test Transaction",
+        image: "https://example.com/your_logo",
      
+       
+        // checkout_config_id: process.env.NEXT_PUBLIC_RAZORPAY_CHECKOUT_CONFIG_ID || "YourConfigIDHere",
+        prefill: {
+          name: fullName, //your customer's name
+          email: email,
+          contact: phone //Provide the customer's phone number for better conversion rates 
+        },
+        // handler: function (response) {
+        //   console.log('Payment successful:', response);
+        //   // Handle successful payment
+        //   window.location.href = '/user';
+        // },
+        // modal: {
+        //   ondismiss: function () {
+        //     console.log('Payment modal closed');
+        //   }
+        // }
+      }
+      console.log(opstion);
+
+      var rzp1 = new Razorpay(opstion);
+      rzp1.open();
+console.log(rzp1);
+
+
+    } catch (err) {
+      console.log(err);
+      setError(err?.message || 'Payment failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+
+
+  }
+
+  return (
+    <form ref={orderFormData} onSubmit={(e) => handelOrderForm(e)} method="POST" action="/api/payment" className="space-y-8">
+
+
+
+      <div className="bg-white rounded-xl p-6 shadow-lg mt-24 ">
+        <h2 className="text-2xl font-bold text-[var(--text-color)] mb-6">Shipping Details</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Input data={"Full Name"} type={'text'} names={'fullName'} />
+          <Input data={"Phone"} type={'tel'} names={'phone'} />
+  
+
+          <Input data={'City'} type={'text'} names={'city'} />
+          <Input data={'State'} type={'text'} names={'state'} />
+          <Input data={'Pin Code'} type={'number'} names={'postalCode'} />
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold mb-2">Address</label>
+            <textarea
+              name="address"
+              placeholder="Your Address"
+              className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200 "
+              required
+              rows={3}
+            />
+          </div>
+
+        </div>
+
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+
+
+        <div className="flex items-center gap-10 mt-6 mb-5">
+          <div className="text-lg font-semibold text-[var(--text-color)]">Payable Amount: ₹{payAmount || 0}</div>
+          <button
+            type="submit"
+            disabled={isLoading || !session}
+            className="px-6 py-3 bg-[var(--sec-accent-color)]  hover:bg-[var(--accent-color)] text-[var(--bg-color)] rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Processing...' : 'Place Order'}
+          </button>
+        </div>
+      </div>
+    </form>
+
+
+
   )
 }
 
 export default page
+
+
+export function Input({ data, type, names }) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold mb-2">{data}</label>
+      <input name={names} type={type} placeholder={`Your ${data}`} className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200 " required />
+    </div>
+  )
+}

@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
 /* Reset only specific elements, not all elements */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
 
-:root{
+:root {
   /* Base Colors */
-  --text-color: #080808;
+  --text-color: #1d1d1deb;
   --bg-color: #edecec;
   --sec-bg-color: #d1cdc8c7;
-  --accent-color: #EBCB8B; 
+  --accent-color: #EBCB8B;
   --sec-accent-color: #8A4F7D;
 
   /* Product Card Variables */
@@ -22,17 +23,19 @@ html, body {
   --card-shadow-hover: 0 20px 25px 5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --card-border-radius: 12px;
   --card-padding: 1.5rem;
-  
+
 
   /* Transitions */
   --transition-fast: 0.15s ease-in-out;
   --transition-normal: 0.3s ease-in-out;
   --transition-slow: 0.5s ease-in-out;
 }
-body{
- 
+
+body {
+
   margin: 0 auto;
 }
+
 /* Remove default link styling */
 
 
@@ -46,6 +49,5 @@ button {
 
 
 .scrollbar-none::-webkit-scrollbar {
-  display: none; 
+  display: none;
 }
-

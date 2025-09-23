@@ -4,11 +4,11 @@ import User from '@/modules/user'
 import connectDB from '@/lib/mongoose';
 
 export async function POST(request) {
-  console.log(request);
+ 
 
   try {
     const body = await request.json()
-    console.log(body);
+  
 
     const { email, name, image } = body
 
@@ -68,7 +68,7 @@ export async function POST(request) {
     }
 
   } catch (error) {
-    console.error("User API Error:", error)
+
     return NextResponse.json(
       { message: "Internal servereeeeeeeeeeeeeeeeee error" },
       { status: 500 }

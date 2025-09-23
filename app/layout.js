@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <Navbar />
           <main className="">
-            {/* Wrap in SlowServer to simulate server delay and show loading UI */}
+      
 
             {children}
 

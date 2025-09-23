@@ -16,7 +16,7 @@ async function Navbar() {
   const logoSrc = session?.user?.image || '/image/logo.png'
 
   return (
-    <NavbarUi session={session} logoSrc={logoSrc} />
+    <NavbarUi session={session?.user?.userName} logoSrc={logoSrc} />
   )
 }
 
