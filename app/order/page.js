@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useRef, useState } from 'react'
 
-function page({ searchParams }) {
+function Page({ searchParams }) {
 
   const orderFormData = useRef(null)
   const [orderId, setOrderId] = useState(null)
@@ -218,7 +218,7 @@ console.log(rzp1);
   )
 }
 
-export default page
+export default Page
 
 
 export function Input({ data, type, names }) {

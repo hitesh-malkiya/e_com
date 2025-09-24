@@ -6,13 +6,13 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from 'react'
 import Loading from '@/app/loading'
-function page() {
-    const { data: session } = useSession()
+function Page() {
+    const { data: session, status } = useSession()
     const router = useRouter()
     const formData = useRef(null);
     const [btnactiv, setBtnactiv] = useState(false)
     const [message, setMessage] = useState('')
-    const {status} = useSession()
+    
   
 
 
@@ -135,4 +135,4 @@ useEffect(() => {
     )
 }
 
-export default page
+export default Page

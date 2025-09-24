@@ -35,7 +35,7 @@ console.log(session);
     } catch (error) {
 
     }
-  }, [router]);
+  }, []);
 
   const handleCredentialLogin = async (e) => {
     e.preventDefault();
