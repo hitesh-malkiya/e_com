@@ -8,7 +8,7 @@ import ProductsList from "./ProductsList";
 
 
 
-export default async function page({ searchParams, params }) {
+export default async function Page({ searchParams, params }) {
   const queryString = await searchParams
 
 

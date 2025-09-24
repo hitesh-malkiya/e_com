@@ -12,7 +12,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Adminregister from "./Adminregister"
 
 
-export default async function page({ searchParams, params }) {
+export default async function Page({ searchParams, params }) {
   const queryString = await searchParams
 
 

@@ -5,7 +5,7 @@ import Getproduct from '../components/Getproduct';
 import NotFound from '../not-found';
 
 
-async function page({searchParams, params }) {
+async function Page({searchParams, params }) {
 
 
 
@@ -52,4 +52,4 @@ if(productsData.length == 0){
   )
 }
 
-export default page
+export default Page

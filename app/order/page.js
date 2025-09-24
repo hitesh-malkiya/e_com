@@ -2,7 +2,7 @@
 import { getProductsSort } from '@/lib/Getproduct'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 
 function Page({ searchParams }) {
 
@@ -15,7 +15,7 @@ function Page({ searchParams }) {
 
   const { data: session } = useSession()
 
-  const dataGet = async (id) => {
+  const dataGet = useCallback(async (id) => {
     try {
       const tamp = await searchParams
       const queryString = new URLSearchParams(tamp).toString();
@@ -33,7 +33,7 @@ function Page({ searchParams }) {
 
       return 0;
     }
-  };
+  }, [searchParams]);
 
 
   useEffect(() => {
@@ -54,7 +54,7 @@ function Page({ searchParams }) {
       };
       fetchAmount();
     }
-  }, [orderId]);
+  }, [orderId, dataGet]);
 
   console.log(payAmount);
 

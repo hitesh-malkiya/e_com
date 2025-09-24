@@ -1,7 +1,7 @@
 import React from 'react'
 import Adminregister from './[slug]/Adminregister'
 
-function page() {
+function Page() {
   return (
     <div className="min-h-screen bg-gradient-to-br mt-24 bg-[var(--sec-bg-color)] py-8 px-4">
       <div className="">
@@ -11,4 +11,4 @@ function page() {
   )
 }
 
-export default page
+export default Page
