@@ -11,12 +11,14 @@ async function Navbar() {
     session = null
   }
 
- 
+
+ const admin = session?.user.admin?.isAdmin
+ const user = session?.user.admin?.userName
   
   const logoSrc = session?.user?.image || '/image/logo.png'
 
   return (
-    <NavbarUi session={session?.user?.userName} logoSrc={logoSrc} />
+    <NavbarUi admin={admin} user={user} session={session?.user?.userName} logoSrc={logoSrc} />
   )
 }
 

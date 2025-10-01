@@ -3,9 +3,11 @@ import { getProductsSort } from '@/lib/Getproduct'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useRef, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation';
+import Loading from '../loading'
 
 function Page({ searchParams }) {
-
+  const router = useRouter();
   const orderFormData = useRef(null)
   const [orderId, setOrderId] = useState(null)
   const [payAmount, setPayAmount] = useState(0)
@@ -19,28 +21,23 @@ function Page({ searchParams }) {
     try {
       const tamp = await searchParams
       const queryString = new URLSearchParams(tamp).toString();
-      console.log(queryString);
 
       const res = await getProductsSort(queryString, id, 'id');
 
       const price = res?.data?.products?.[0]?.price;
       const adminData = res?.data?.products?.[0]?.admin;
       setAdmin(adminData);
-      console.log(price , adminData);
-      
       return price;
     } catch (err) {
-
       return 0;
     }
   }, [searchParams]);
-
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const run = async () => {
         const productId = localStorage.getItem('productId');
-        setOrderId(productId);
+        setOrderId(productId || 0);
       };
       run();
     }
@@ -56,8 +53,6 @@ function Page({ searchParams }) {
     }
   }, [orderId, dataGet]);
 
-  console.log(payAmount);
-
   const loadRazorpayScript = () => {
     return new Promise((resolve, reject) => {
       if (typeof window === "undefined") return resolve(false);
@@ -70,6 +65,23 @@ function Page({ searchParams }) {
       document.body.appendChild(script);
     });
   };
+  // get data from admin api
+  // const getAdminData = async () => {
+  //   try {
+  //     const response = await axios.get('/api/admin');
+  //     console.log(response);
+  //     return response.data;
+
+
+  //   } catch (error) {
+  //     console.error('Failed to fetch admin data:', error);
+  //     return null;
+  //   }
+  // };
+  // useEffect(() => {
+  //   // Call getAdminData when the page loads
+  //   getAdminData();
+  // }, []);
 
 
   const handelOrderForm = async (e) => {
@@ -81,7 +93,7 @@ function Page({ searchParams }) {
       const user = session?.user?.name
       const userName = session?.user?.userName
       const email = session?.user?.email
-      const quantity =  1
+      const quantity = 1
       const fullName = orderFormData.current.fullName.value
       const address = orderFormData.current.address.value || ""
       const city = orderFormData.current.city.value
@@ -89,8 +101,6 @@ function Page({ searchParams }) {
       const postalCode = orderFormData.current.postalCode.value
       const phone = orderFormData.current.phone.value
 
-
-    
       const amount = Math.max(1, Math.round((Number(payAmount) || 0) * quantity)); // in rupees, min ₹1
       const response = await axios.post('/api/payment', {
         admin,
@@ -106,17 +116,13 @@ function Page({ searchParams }) {
         state,
         postalCode,
         phone,
-      }
-      )
-      console.log("reeeeee" , response);
-      
+      });
+
       orderFormData.current.reset();
-
-
+      console.log(response)
       const ok = await loadRazorpayScript();
       if (!ok) throw new Error("Razorpay SDK failed to load");
       const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-      console.log(response);
 
       const { data } = response
       const opstion = {
@@ -128,54 +134,83 @@ function Page({ searchParams }) {
         name: userName,
         description: "Test Transaction",
         image: "https://example.com/your_logo",
-     
-       
+
+
         // checkout_config_id: process.env.NEXT_PUBLIC_RAZORPAY_CHECKOUT_CONFIG_ID || "YourConfigIDHere",
         prefill: {
-          name: fullName, //your customer's name
+          name: fullName,
           email: email,
-          contact: phone //Provide the customer's phone number for better conversion rates 
+          phone: phone
         },
-        // handler: function (response) {
-        //   console.log('Payment successful:', response);
-        //   // Handle successful payment
-        //   window.location.href = '/user';
-        // },
-        // modal: {
-        //   ondismiss: function () {
-        //     console.log('Payment modal closed');
-        //   }
-        // }
-      }
-      console.log(opstion);
+        handler: async function (response) {
+          // console.log("Payment Success Response:", response);
+
+          // // Step 3: Verify payment
+          // const verifyRes = await fetch('api/payment-verify', {
+          //   method: "POST",
+          //   headers: { "Content-Type": "application/json" },
+          //   body: JSON.stringify(response)
+          // });
+          // const verifyData = await verifyRes.json();
+
+
+          // alert(verifyData.message);
+
+
+
+          try {
+            const response = await axios.put("/api/payment", { id: data.id });
+            console.log(response);
+
+          } catch (error) {
+            console.log(error);
+
+          }
+          // response.razorpay_payment_id
+          // response. data.id
+          // response.razorpay_signature
+          // Delete productId from localStorage after successful payment
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('productId');
+          }
+          // router.push('/user');
+        },
+        modal: {
+          ondismiss: function () {
+            // Payment modal closed
+          }
+        }
+      };
 
       var rzp1 = new Razorpay(opstion);
       rzp1.open();
-console.log(rzp1);
+      console.log(rzp1);
 
 
     } catch (err) {
-      console.log(err);
       setError(err?.message || 'Payment failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
+  }
 
+  if (orderId === null) {
+    return <Loading />
+  }
 
+  if (orderId == 0) {
+    router.push('/user');
+    return null;
   }
 
   return (
     <form ref={orderFormData} onSubmit={(e) => handelOrderForm(e)} method="POST" action="/api/payment" className="space-y-8">
-
-
 
       <div className="bg-white rounded-xl p-6 shadow-lg mt-24 ">
         <h2 className="text-2xl font-bold text-[var(--text-color)] mb-6">Shipping Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Input data={"Full Name"} type={'text'} names={'fullName'} />
           <Input data={"Phone"} type={'tel'} names={'phone'} />
-  
-
           <Input data={'City'} type={'text'} names={'city'} />
           <Input data={'State'} type={'text'} names={'state'} />
           <Input data={'Pin Code'} type={'number'} names={'postalCode'} />
@@ -189,17 +224,12 @@ console.log(rzp1);
               rows={3}
             />
           </div>
-
         </div>
-
-
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             {error}
           </div>
         )}
-
-
         <div className="flex items-center gap-10 mt-6 mb-5">
           <div className="text-lg font-semibold text-[var(--text-color)]">Payable Amount: ₹{payAmount || 0}</div>
           <button
@@ -212,14 +242,10 @@ console.log(rzp1);
         </div>
       </div>
     </form>
-
-
-
   )
 }
 
 export default Page
-
 
 export function Input({ data, type, names }) {
   return (

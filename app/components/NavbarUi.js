@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 
-function NavbarUi({ session, logoSrc }) {
+function NavbarUi({ session, logoSrc , admin , user}) {
 
 
 
@@ -38,7 +38,7 @@ function NavbarUi({ session, logoSrc }) {
           <NavLink params='/contact'>contact</NavLink>
 
           {session ? (
-            <NavLink params={`/user`}>
+            <NavLink params={admin ? `/admin/${user}` : '/user'}>
               <Image
                 className='w-8 h-8 rounded-full object-cover'
                 src={logoSrc}

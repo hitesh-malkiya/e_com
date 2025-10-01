@@ -7,6 +7,7 @@ import { getProducts } from '@/lib/Getproduct';
 import Categorie from './Categorie';
 import Getproduct from './Getproduct';
 import { AddToCartButton } from './AddToCartButton';
+import { Buybtn } from './Buybtn';
 
 
 async function Categories({ searchParams }) {
@@ -18,10 +19,11 @@ async function Categories({ searchParams }) {
   try {
     const res = await getProducts(queryString);
     products = res?.data?.products || [];
+console.log(res);
 
 
   } catch (err) {
-
+    console.error('Error fetching products:', err);
     products = [];
   }
 
@@ -49,6 +51,7 @@ async function Categories({ searchParams }) {
           <h3 className="py-[1lh] w-full text-2xl text-center after:content-[''] after:block after:w-[80px] after:h-[5px] after:mx-auto after:mt-[10px] after:rounded-[10px] after:bg-[var(--sec-accent-color)]">{products[0].category}</h3>
         <Getproduct productData ={products}  >
         <AddToCartButton />
+        <Buybtn/>
         </Getproduct>
         </> : (
           <>

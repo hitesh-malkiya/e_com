@@ -8,13 +8,80 @@ export async function POST(req) {
     try {
         await connectDB()
         const data = await req.json();
-        const { fullName, userName, email, password, image, isAdmin, brand, isActive, firstLogin, planValidUntil } = data;
+        const { 
+            fullName, 
+            userName, 
+            email, 
+            password, 
+            logoImg, 
+            isAdmin, 
+            brand, 
+            razorpayId,
+            razorpaySecret,
+            address,
+            isActive, 
+            firstLogin 
+        } = data;
+        
+        // Validate required fields
+        if (!fullName || !email || !password) {
+            return NextResponse.json({ 
+                error: "Full name, email, and password are required" 
+            }, { status: 400 });
+        }
+
+        // Validate email format
+        const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+        if (!emailRegex.test(email)) {
+            return NextResponse.json({ 
+                error: "Please enter a valid email address" 
+            }, { status: 400 });
+        }
+
+        // Validate password strength
+        if (password.length < 6) {
+            return NextResponse.json({ 
+                error: "Password must be at least 6 characters long" 
+            }, { status: 400 });
+        }
+
+        // Validate full name
+        if (fullName.length < 2 || fullName.length > 50) {
+            return NextResponse.json({ 
+                error: "Full name must be between 2 and 50 characters" 
+            }, { status: 400 });
+        }
+
+        // Validate username if provided
+        if (userName) {
+            if (userName.length < 2 || userName.length > 30) {
+                return NextResponse.json({ 
+                    error: "Username must be between 2 and 30 characters" 
+                }, { status: 400 });
+            }
+            const usernameRegex = /^[a-zA-Z0-9_]+$/;
+            if (!usernameRegex.test(userName)) {
+                return NextResponse.json({ 
+                    error: "Username can only contain letters, numbers, and underscores" 
+                }, { status: 400 });
+            }
+        }
+
+        // Validate address if provided
+        if (address) {
+            const { address: addr, city, state, postalCode } = address;
+            if (!addr || !city || !state || !postalCode) {
+                return NextResponse.json({ 
+                    error: "Complete address information is required (address, city, state, postal code)" 
+                }, { status: 400 });
+            }
+        }
         
         // Check if admin already exists
         const existingAdmin = await Admin.findOne({ 
             $or: [
-                { email: email },
-                { userName: userName }
+                { email: email.toLowerCase() },
+                ...(userName ? [{ userName: userName }] : [])
             ]
         });
         
@@ -27,20 +94,33 @@ export async function POST(req) {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 12);
         
-        // Create admin
-        const admin = await Admin.create({
-            fullName,
-            userName,
-            email,
+        // Create admin with proper field mapping
+        const adminData = {
+            fullName: fullName.trim(),
+            email: email.toLowerCase().trim(),
             password: hashedPassword,
-            image: image || "",
-            isAdmin: isAdmin || true,
-            brand: brand || "",
+            isAdmin: isAdmin !== undefined ? isAdmin : true,
+            brand: brand ? brand.trim() : "",
+            logoImg: logoImg || "",
+            razorpayId: razorpayId || "",
+            razorpaySecret: razorpaySecret || "",
+            address: address || {
+                address: "",
+                city: "",
+                state: "",
+                postalCode: ""
+            },
             isActive: isActive !== undefined ? isActive : true,
             firstLogin: firstLogin !== undefined ? firstLogin : true,
-            lastLogin: new Date(),
-            planValidUntil: planValidUntil || null
-        });
+            lastLogin: new Date()
+        };
+
+        // Add userName only if provided
+        if (userName) {
+            adminData.userName = userName.trim();
+        }
+
+        const admin = await Admin.create(adminData);
 
         return NextResponse.json({ 
             message: "Admin created successfully",
@@ -51,11 +131,31 @@ export async function POST(req) {
                 email: admin.email,
                 brand: admin.brand,
                 isAdmin: admin.isAdmin,
-                isActive: admin.isActive
+                isActive: admin.isActive,
+                firstLogin: admin.firstLogin,
+                lastLogin: admin.lastLogin
             }
         });
     } catch (err) {
         console.error('Admin creation error:', err);
+        
+        // Handle specific MongoDB errors
+        if (err.code === 11000) {
+            const field = Object.keys(err.keyPattern)[0];
+            return NextResponse.json({ 
+                error: `Admin with this ${field} already exists` 
+            }, { status: 400 });
+        }
+        
+        // Handle validation errors
+        if (err.name === 'ValidationError') {
+            const errors = Object.values(err.errors).map(e => e.message);
+            return NextResponse.json({ 
+                error: "Validation failed",
+                details: errors
+            }, { status: 400 });
+        }
+        
         return NextResponse.json({ 
             error: err?.message || "Server error" 
         }, { status: 500 });
@@ -65,17 +165,236 @@ export async function POST(req) {
 export async function GET(req) {
     try {
         await connectDB();
-        const admins = await Admin.find({}).select('-password');
-        const users = await User.find({ isAdmin: true }).select('-password');
         
+        // Get query parameters for filtering
+        const { searchParams } = new URL(req.url);
+        const search = searchParams.get('search') || '';
+        const isActive = searchParams.get('isActive');
+        const userName = searchParams.get('userName');
+        const email = searchParams.get('email');
+        const id = searchParams.get('id');
+        
+        // Build filter object
+        const filter = {};
+        
+        // If specific ID is provided, find by ID
+        if (id) {
+            filter._id = id;
+        }
+        // If userName is provided, find by userName
+        else if (userName) {
+            filter.userName = userName;
+        }
+        // If email is provided, find by email
+        else if (email) {
+            filter.email = email;
+        }
+        // If search is provided, search across multiple fields
+        else if (search) {
+            filter.$or = [
+                { fullName: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { userName: { $regex: search, $options: 'i' } },
+                { brand: { $regex: search, $options: 'i' } }
+            ];
+        }
+        
+        // Add isActive filter if provided
+        if (isActive !== null && isActive !== undefined) {
+            filter.isActive = isActive === 'true';
+        }
+        
+        // Fetch a single admin with ALL data (including secrets and password)
+        const admin = await Admin.findOne(filter);
+
+        if (!admin) {
+            return NextResponse.json({ 
+                success: false,
+                error: "Admin not found" 
+            }, { status: 404 });
+        }
+
+        // Also fetch admin users (users with isAdmin: true) for context
+        const adminUsers = await User.find({ isAdmin: true })
+            .select('-password');
+
         return NextResponse.json({ 
-            admins,
-            adminUsers: users,
-            totalAdmins: admins.length,
-            totalAdminUsers: users.length
+            success: true,
+            data: {
+                admin: {
+                    id: admin._id,
+                    fullName: admin.fullName,
+                    userName: admin.userName,
+                    email: admin.email,
+                    password: admin.password, // Include password
+                    brand: admin.brand,
+                    logoImg: admin.logoImg,
+                    razorpayId: admin.razorpayId,
+                    razorpaySecret: admin.razorpaySecret, // Include secret
+                    address: admin.address,
+                    orderIds: admin.orderIds,
+                    isAdmin: admin.isAdmin,
+                    isActive: admin.isActive,
+                    firstLogin: admin.firstLogin,
+                    lastLogin: admin.lastLogin,
+                    createdAt: admin.createdAt,
+                    updatedAt: admin.updatedAt
+                },
+                
+                adminUsers: adminUsers,
+                totalAdminUsers: adminUsers.length
+            }
         });
     } catch (err) {
         console.error('Admin fetch error:', err);
+        return NextResponse.json({ 
+            success: false,
+            error: err?.message || "Server error" 
+        }, { status: 500 });
+    }
+}
+
+export async function PUT(req) {
+    try {
+        await connectDB();
+        const data = await req.json();
+        const { id, fullName, userName, email, brand, logoImg, razorpayId, razorpaySecret, address, isActive, isAdmin } = data;
+        
+        if (!id) {
+            return NextResponse.json({ 
+                error: "Admin ID is required" 
+            }, { status: 400 });
+        }
+
+        // Validate email format if provided
+        if (email) {
+            const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+            if (!emailRegex.test(email)) {
+                return NextResponse.json({ 
+                    error: "Please enter a valid email address" 
+                }, { status: 400 });
+            }
+        }
+
+        // Validate full name if provided
+        if (fullName && (fullName.length < 2 || fullName.length > 50)) {
+            return NextResponse.json({ 
+                error: "Full name must be between 2 and 50 characters" 
+            }, { status: 400 });
+        }
+
+        // Validate username if provided
+        if (userName) {
+            if (userName.length < 2 || userName.length > 30) {
+                return NextResponse.json({ 
+                    error: "Username must be between 2 and 30 characters" 
+                }, { status: 400 });
+            }
+            const usernameRegex = /^[a-zA-Z0-9_]+$/;
+            if (!usernameRegex.test(userName)) {
+                return NextResponse.json({ 
+                    error: "Username can only contain letters, numbers, and underscores" 
+                }, { status: 400 });
+            }
+        }
+
+        // Check if admin exists
+        const existingAdmin = await Admin.findById(id);
+        if (!existingAdmin) {
+            return NextResponse.json({ 
+                error: "Admin not found" 
+            }, { status: 404 });
+        }
+
+        // Check for duplicate email/username if they're being updated
+        if (email || userName) {
+            const duplicateFilter = { _id: { $ne: id } };
+            if (email) duplicateFilter.email = email.toLowerCase();
+            if (userName) duplicateFilter.userName = userName;
+            
+            const duplicate = await Admin.findOne(duplicateFilter);
+            if (duplicate) {
+                return NextResponse.json({ 
+                    error: "Admin with this email or username already exists" 
+                }, { status: 400 });
+            }
+        }
+
+        // Prepare update data
+        const updateData = {};
+        if (fullName) updateData.fullName = fullName.trim();
+        if (userName) updateData.userName = userName.trim();
+        if (email) updateData.email = email.toLowerCase().trim();
+        if (brand !== undefined) updateData.brand = brand ? brand.trim() : "";
+        if (logoImg !== undefined) updateData.logoImg = logoImg || "";
+        if (razorpayId !== undefined) updateData.razorpayId = razorpayId || "";
+        if (razorpaySecret !== undefined) updateData.razorpaySecret = razorpaySecret || "";
+        if (address) updateData.address = address;
+        if (isActive !== undefined) updateData.isActive = isActive;
+        if (isAdmin !== undefined) updateData.isAdmin = isAdmin;
+
+        const updatedAdmin = await Admin.findByIdAndUpdate(
+            id, 
+            updateData, 
+            { new: true, runValidators: true }
+        ).select('-password -razorpaySecret');
+
+        return NextResponse.json({ 
+            success: true,
+            message: "Admin updated successfully",
+            admin: updatedAdmin
+        });
+    } catch (err) {
+        console.error('Admin update error:', err);
+        
+        if (err.code === 11000) {
+            const field = Object.keys(err.keyPattern)[0];
+            return NextResponse.json({ 
+                error: `Admin with this ${field} already exists` 
+            }, { status: 400 });
+        }
+        
+        if (err.name === 'ValidationError') {
+            const errors = Object.values(err.errors).map(e => e.message);
+            return NextResponse.json({ 
+                error: "Validation failed",
+                details: errors
+            }, { status: 400 });
+        }
+        
+        return NextResponse.json({ 
+            error: err?.message || "Server error" 
+        }, { status: 500 });
+    }
+}
+
+export async function DELETE(req) {
+    try {
+        await connectDB();
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get('id');
+        
+        if (!id) {
+            return NextResponse.json({ 
+                error: "Admin ID is required" 
+            }, { status: 400 });
+        }
+
+        const admin = await Admin.findById(id);
+        if (!admin) {
+            return NextResponse.json({ 
+                error: "Admin not found" 
+            }, { status: 404 });
+        }
+
+        await Admin.findByIdAndDelete(id);
+
+        return NextResponse.json({ 
+            success: true,
+            message: "Admin deleted successfully"
+        });
+    } catch (err) {
+        console.error('Admin deletion error:', err);
         return NextResponse.json({ 
             error: err?.message || "Server error" 
         }, { status: 500 });

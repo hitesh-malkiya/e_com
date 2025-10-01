@@ -2,6 +2,7 @@ import { getProductsSort } from '@/lib/Getproduct';
 import React from 'react'
 import Getproduct from './Getproduct';
 import { AddToCartButton } from './AddToCartButton';
+import { Buybtn } from './Buybtn';
 
 async function Categorie({categorieName , searchParams}) {
 
@@ -30,6 +31,7 @@ async function Categorie({categorieName , searchParams}) {
           <h3 className="py-[1lh] w-full text-2xl text-center after:content-[''] after:block after:w-[80px] after:h-[5px] after:mx-auto after:mt-[10px] after:rounded-[10px] after:bg-[var(--sec-accent-color)]">{categorieName}</h3>
           <Getproduct productData={productsData}>
             <AddToCartButton />
+            <Buybtn/>
           </Getproduct>
         </div>
   )

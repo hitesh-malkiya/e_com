@@ -20,6 +20,7 @@ const orderSchema = new mongoose.Schema({
     required: [true, "Order ID is required"],
     trim: true
   },
+ 
   receipt: {
     type: String,
     required: [true, "Receipt is required"],

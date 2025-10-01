@@ -90,10 +90,6 @@ await connectDB()
 export async function GET(request) {
     try {
         await connectDB();
-       
-    
-       
-    
         // Get query parameters from URL
         const { searchParams } = new URL(request.url);
         const category = searchParams.get('category');
@@ -101,11 +97,12 @@ export async function GET(request) {
         const minPrice = searchParams.get('minPrice');
         const maxPrice = searchParams.get('maxPrice');
         const search = searchParams.get('search');
-        const limit = parseInt(searchParams.get('limit'));
-        const page = parseInt(searchParams.get('page'));
+        const limit = parseInt(searchParams.get('limit')) || 20; // Default limit
+        const page = parseInt(searchParams.get('page')) || 1; // Default page
         const sortBy = searchParams.get('sortBy') || 'name';
         const sortOrder = searchParams.get('sortOrder') || 'asc';
-        const id =searchParams.get('id');
+        const id = searchParams.get('id');
+        
         // Build query object
         let query = {};
         
@@ -128,10 +125,9 @@ export async function GET(request) {
         if (id) {
             query._id = id;
         }
-     if(admin){
-        query.admin= admin
-     }
-     
+        if (admin) {
+            query.admin = admin;
+        }
         
         // Build sort object
         const sort = {};
@@ -141,7 +137,9 @@ export async function GET(request) {
         const skip = (page - 1) * limit;
         
         // Execute query with pagination and sorting
-        console.log(query);
+        console.log('Query:', query);
+        console.log('Sort:', sort);
+        console.log('Limit:', limit, 'Skip:', skip);
         
         const products = await Product.find(query)
             .sort(sort)

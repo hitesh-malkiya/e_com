@@ -17,11 +17,6 @@ const adminSchema = new mongoose.Schema({
     maxlength: [50, "Name cannot exceed 50 characters"],
     match: [/^[a-zA-Z\s]+$/, 'Name can only contain letters and spaces'],
   },
-  image: {
-    type: String,
-    default: "",
-   
-  },
   userName: {
     type: String,
     trim: true,
@@ -30,6 +25,12 @@ const adminSchema = new mongoose.Schema({
     unique: true,
     sparse: true,
     match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'],
+  },
+  password: {
+    type: String,
+    required: [true, "Password is required"],
+    select: false,
+    minlength: [6, "Password must be at least 6 characters long"],
   }, 
   brand: {
     type: String,
@@ -37,15 +38,51 @@ const adminSchema = new mongoose.Schema({
     maxlength: [50, "Brand name cannot exceed 50 characters"],
     default: "",
   },
-  password: {
+  logoImg: {
     type: String,
-    required: [true, "Password is required"],
+    trim: true,
+    default: "",
+  },
+  razorpayId: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  razorpaySecret: {
+    type: String,
+    trim: true,
     select: false,
-    minlength: [6, "Password must be at least 6 characters long"],
+    default: "",
   },
   isAdmin: {
     type: Boolean,
     default: false,
+  },
+address: {
+    address: {
+      type: String,
+      required: [true, "Address is required"],
+      trim: true
+    },
+    city: {
+      type: String,
+      required: [true, "City is required"],
+      trim: true
+    },
+    state: {
+      type: String,
+      required: [true, "State is required"],
+      trim: true
+    },
+    postalCode: {
+      type: String,
+      required: [true, "Postal code is required"],
+      trim: true
+    }
+  },
+  orderIds: {
+    type: Array,
+    default: [],
   },
   isActive: {
     type: Boolean,
@@ -58,20 +95,7 @@ const adminSchema = new mongoose.Schema({
   lastLogin: {
     type: Date,
     default: Date.now,
-  },
-  planValidUntil: {
-    type: Date,
-    validate: {
-      validator: function(v) {
-        return !v || v > new Date();
-      },
-      message: 'Plan validity date must be in the future'
-    }
-  },
-  loginAttempts: {
-    type: Number,
-    default: 0,
-  },
+  }
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

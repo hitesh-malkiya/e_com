@@ -11,7 +11,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body className="min-h-screen max-w-[1500px]">
         <Providers>
           <Navbar />
@@ -23,8 +23,8 @@ export default function RootLayout({ children }) {
           </main>
           <Footer />
         </Providers>
-        <Analytics />
-        <SpeedInsights />
+        {/* <Analytics />
+        <SpeedInsights /> */}
       </body>
     </html>
   );

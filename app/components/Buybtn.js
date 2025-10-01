@@ -1,18 +1,18 @@
 'use client'
 
-import { useState } from 'react'
-
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from './Botton'
 
-
 export const Buybtn = ({ productId }) => {
-
-
     const [loading, setLoading] = useState(false)
+    const [mounted, setMounted] = useState(false)
+    const router = useRouter()
 
-
-    // const { data: session } = useSession()
-
+    // Prevent hydration mismatch
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     const handleAddToCart = async () => {
         if (!productId) {
@@ -21,17 +21,29 @@ export const Buybtn = ({ productId }) => {
         }
         setLoading(true)
         try {
-            localStorage.setItem('productId', productId)
-
-            window.location.href = '/order'
-
+            // Only access localStorage on client side
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('productId', productId)
+                router.push('/order')
+            }
         } catch (error) {
             console.log(error);
-
-
         } finally {
             setLoading(false)
         }
+    }
+
+    // Don't render until mounted to prevent hydration mismatch
+    if (!mounted) {
+        return (
+            <Button
+                size='small'
+                data=" buy now"
+                variant="primary"
+                type="button"
+                disabled={true}
+            />
+        )
     }
 
     return (

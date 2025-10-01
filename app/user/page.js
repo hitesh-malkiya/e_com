@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 import Loading from "../product/loading";
 import Header from "./Header";
 import ProductsList from "./ProductsList";
@@ -24,7 +25,7 @@ console.log(session);
 
 
 
-  if (session?.user?.userNam) {
+  if (!session?.user?.userName) {
     redirect('/log-in');
     return (
      <Loading />

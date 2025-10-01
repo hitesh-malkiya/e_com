@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import mongoose from 'mongoose'
+
 import User from '@/modules/user'
 import connectDB from '@/lib/mongoose';
 
@@ -20,7 +20,7 @@ export async function POST(request) {
     }
 
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI)
+    connectDB()
 
     // Check if user already exists
     let user = await User.findOne({ email })
