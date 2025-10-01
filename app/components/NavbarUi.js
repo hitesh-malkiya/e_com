@@ -5,9 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 
-function NavbarUi({ session, logoSrc , admin , user}) {
-
-
+function NavbarUi({ session = false, logoSrc = '/image/profile-default.png', admin = false, user = '' }) {
 
 
 
@@ -15,7 +13,7 @@ function NavbarUi({ session, logoSrc , admin , user}) {
 
   return (
     <section className="">
-      <nav className='grid grid-cols-[1fr_1fr] items-center justify-start gap-8 fixed top-0 left-0 pl-2 pr-8 right-0 bg-[var(--bg-color)] text-[var(--text-color)] z-100'>
+      <nav className='grid grid-cols-[1fr_1fr] items-center justify-start gap-8 fixed top-0 left-0 pl-2 pr-8 right-0 bg-[var(--bg-color)] text-[var(--text-color)] z-[100]'>
         <div className="pl-3 flex justify-items-center justify-between items-center ">
           <Image
             className='w-32 h-auto'
@@ -28,7 +26,7 @@ function NavbarUi({ session, logoSrc , admin , user}) {
             type="text"
             placeholder="Search your product"
             name="search"
-            className="ml-6 px-4 py-2 rounded-lg border w-full border-[var(--sec-bg-color)] focus:outline-none focus:ring-2 focus:[var(--accent-color)] bg-[var(--sec-bg-color)] text-[var(--text-color)] transition duration-200 shadow-sm"
+            className="ml-6 px-4 py-2 rounded-lg border w-full border-[var(--sec-bg-color)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] bg-[var(--sec-bg-color)] text-[var(--text-color)] transition duration-200 shadow-sm"
           />
         </div>
         <div className='flex justify-items-center justify-between items-center text-[var(--bg-color)] '>
@@ -44,7 +42,7 @@ function NavbarUi({ session, logoSrc , admin , user}) {
                 src={logoSrc}
                 width={32}
                 height={32}
-                alt='profile'
+                alt={user ? `${user} profile` : 'profile'}
               />
             </NavLink>
           ) : (
@@ -72,4 +70,4 @@ function NavLink({ params, children }) {
     </Link>
   )
 }
-
+    

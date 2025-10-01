@@ -3,15 +3,7 @@ import React from "react";
 const Order = async (params) => {
   const { orders } = await params;
   console.log(orders);
-  if (!orders || orders.length === 0) {
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Orders</h1>
-        <p className="text-gray-500">No orders found.</p>
-      </div>
-    );
-  }
-
+ 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Orders</h1>

@@ -7,6 +7,7 @@ export const Home = () => {
 
 
   return (
+    
     <section className="relative bg-[var(--sec-bg-color)] pl-15 pr-5 mt-24 pt-6">
       <div className="container mx-auto px-4">
         <div className='grid grid-cols-1 md:grid-cols-[1fr_0.7fr] items-center gap-12 justify-center'>
@@ -14,7 +15,7 @@ export const Home = () => {
           <div className="  text-center md:text-left">
             {/* Discount Badge */}
             <div className="inline-block">
-              <span className="bg-[var(--sec-accent-color)] text-white px-4 py-2 rounded-full text-sm font-semibold">
+              <span className="bg-[var(--sec-accent-color)]  text-white px-4 py-2 rounded-full text-sm font-semibold">
                 FLAT 40% DISCOUNT
               </span>
             </div>
@@ -29,13 +30,14 @@ export const Home = () => {
               Discover the latest trends and exclusive deals on fashion, electronics, and more. Shop now and enjoy unbeatable prices!
             </p>
 
-            {/* CTA Button */}
-            <div className=" pt-8">
-              <Button link={'product'} data={'Shop Now'} variant="primary" size="large" />
-            </div>
-          </div>
+   
+                  <div className="pt-8 flex flex-col gap-4 md:flex-row md:items-center">
+                    <Button link={'admin'} data={'Register Your Brand'} variant="primary" size="large" />
+                   
+                  </div>
+                  </div>
 
-          {/* Right Image */}
+                  {/* Right Image */}
           <div className='relative '>
             <Image
 

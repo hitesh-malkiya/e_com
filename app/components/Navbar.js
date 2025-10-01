@@ -11,6 +11,7 @@ async function Navbar() {
     session = null
   }
 
+console.log( session);
 
  const admin = session?.user.admin?.isAdmin
  const user = session?.user.admin?.userName

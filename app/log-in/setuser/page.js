@@ -23,7 +23,8 @@ console.log(session);
 
 useEffect(() => {
     if (session?.user?.userName) {
-        router.push(`/user`);
+  router.push(`/user`);
+
     }
 }, [session, router]);
 

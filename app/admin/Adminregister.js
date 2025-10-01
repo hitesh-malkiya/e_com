@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react"
 import axios from "axios"
 import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
+import FormInput from '../components/FormInput'
 
 function Adminregister() {
   const formData = useRef(null)
@@ -66,21 +67,25 @@ function Adminregister() {
     setErrors({})
 
     try {
-      const formDataObj = formData.current;
+      const formEl = formData.current;
+      const fd = new FormData(formEl);
+      const get = (key) => (fd.get(key) || "").toString().trim();
+      const raw = (key) => (fd.get(key) || "").toString(); // for password maybe keep raw
+
       const data = {
-        fullName: formDataObj.fullName.value.trim(),
-        userName: formDataObj.userName.value.trim(),
-        email: formDataObj.email.value.trim(),
-        password: formDataObj.password.value,
-        brand: formDataObj.brand.value.trim(),
-        logoImg: formDataObj.logoImg.value.trim(),
-        razorpayId: formDataObj.razorpayId.value.trim(),
-        razorpaySecret: formDataObj.razorpaySecret.value.trim(),
+        fullName: get('fullName'),
+        userName: get('userName'),
+        email: get('email'),
+        password: raw('password'),
+        brand: get('brand'),
+        logoImg: get('logoImg'),
+        razorpayId: get('razorpayId'),
+        razorpaySecret: get('razorpaySecret'),
         address: {
-          address: formDataObj.address.value.trim(),
-          city: formDataObj.city.value.trim(),
-          state: formDataObj.state.value.trim(),
-          postalCode: formDataObj.postalCode.value.trim()
+          address: get('address'),
+          city: get('city'),
+          state: get('state'),
+          postalCode: get('postalCode')
         },
         isAdmin: true,
         isActive: true
@@ -93,16 +98,23 @@ function Adminregister() {
       }
 
       const response = await axios.post('/api/admin', data)
-      
-      if (response.data.message) {
+console.log(response);
+
+      if (response?.data?.message) {
         setMessage("Admin registered successfully!")
-        formData.current.reset()
-        setErrors({})
+        console.log("Admin registered successfully!");
+       
+       
+        // formEl.reset()
+        if(response?.data.admin.userName){
+         router.push(`/admin/${response?.data.admin.userName}`);
+        }
       }
     } catch (error) {
+      console.error(error);
       const errorMessage = error.response?.data?.error || "Registration failed";
       setMessage(errorMessage);
-      
+
       // Handle validation errors from server
       if (error.response?.data?.details) {
         setErrors({ server: error.response.data.details });
@@ -113,7 +125,11 @@ function Adminregister() {
   }
 
   useEffect(() => {
-    if(session?.user?.admin?.isAdmin) {
+    if (!session) {
+      router.push('/log-in');
+    }
+
+    if (session?.user?.admin?.isAdmin) {
       router.push(`/admin/${session.user.admin.userName}`);
     }
   }, [session, router]);
@@ -124,136 +140,67 @@ function Adminregister() {
       <h3 className="text-2xl font-semibold text-[var(--text-color)] mb-6">
         Register New Admin
       </h3>
-      
+
       <form ref={formData} onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Full Name */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-              Full Name *
-            </label>
-            <input
-              type="text"
-              name="fullName"
-              placeholder="Enter full name"
-              required
-              className={`w-full px-4 py-3 border rounded-lg focus:border-transparent transition duration-200 ${
-                errors.fullName ? 'border-red-500' : 'border-[var(--accent-color)]'
-              }`}
-            />
-            {errors.fullName && (
-              <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
-            )}
-          </div>
+          <FormInput
+            label="Full Name"
+            name="fullName"
+            placeholder="Enter full name"
+            required
+            error={errors.fullName}
+          />
 
-          {/* Username */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-              Username (Optional)
-            </label>
-            <input
-              type="text"
-              name="userName"
-              placeholder="Enter username"
-              className={`w-full px-4 py-3 border rounded-lg focus:border-transparent transition duration-200 ${
-                errors.userName ? 'border-red-500' : 'border-[var(--accent-color)]'
-              }`}
-            />
-            {errors.userName && (
-              <p className="text-red-500 text-sm mt-1">{errors.userName}</p>
-            )}
-          </div>
+          <FormInput
+            label="Username (Optional)"
+            name="userName"
+            placeholder="Enter username"
+            error={errors.userName}
+          />
 
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-              Email *
-            </label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter email"
-              required
-              className={`w-full px-4 py-3 border rounded-lg focus:border-transparent transition duration-200 ${
-                errors.email ? 'border-red-500' : 'border-[var(--accent-color)]'
-              }`}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
-          </div>
+          <FormInput
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="Enter email"
+            required
+            error={errors.email}
+          />
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-              Password *
-            </label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter password (min 6 characters)"
-              required
-              minLength="6"
-              className={`w-full px-4 py-3 border rounded-lg focus:border-transparent transition duration-200 ${
-                errors.password ? 'border-red-500' : 'border-[var(--accent-color)]'
-              }`}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-            )}
-          </div>
+          <FormInput
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="Enter password (min 6 characters)"
+            required
+            error={errors.password}
+          />
 
-          {/* Brand */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-              Brand Name (Optional)
-            </label>
-            <input
-              type="text"
-              name="brand"
-              placeholder="Enter brand name"
-              className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200"
-            />
-          </div>
+          <FormInput
+            label="Brand Name (Optional)"
+            name="brand"
+            placeholder="Enter brand name"
+          />
 
-          {/* Logo Image URL */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-              Logo Image URL (Optional)
-            </label>
-            <input
-              type="url"
-              name="logoImg"
-              placeholder="Enter logo image URL"
-              className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200"
-            />
-          </div>
+          <FormInput
+            label="Logo Image URL (Optional)"
+            name="logoImg"
+            type="url"
+            placeholder="Enter logo image URL"
+          />
 
-          {/* Razorpay ID */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-              Razorpay ID (Optional)
-            </label>
-            <input
-              type="text"
-              name="razorpayId"
-              placeholder="Enter Razorpay ID"
-              className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200"
-            />
-          </div>
+          <FormInput
+            label="Razorpay ID (Optional)"
+            name="razorpayId"
+            placeholder="Enter Razorpay ID"
+          />
 
-          {/* Razorpay Secret */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-              Razorpay Secret (Optional)
-            </label>
-            <input
-              type="password"
-              name="razorpaySecret"
-              placeholder="Enter Razorpay Secret"
-              className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200"
-            />
-          </div>
+          <FormInput
+            label="Razorpay Secret (Optional)"
+            name="razorpaySecret"
+            type="password"
+            placeholder="Enter Razorpay Secret"
+          />
         </div>
 
         {/* Address Section */}
@@ -263,49 +210,16 @@ function Adminregister() {
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-                Address
-              </label>
-              <input
-                type="text"
+              <FormInput
+                label="Address"
                 name="address"
                 placeholder="Enter street address"
-                className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-                City
-              </label>
-              <input
-                type="text"
-                name="city"
-                placeholder="Enter city"
-                className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-                State
-              </label>
-              <input
-                type="text"
-                name="state"
-                placeholder="Enter state"
-                className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
-                Postal Code
-              </label>
-              <input
-                type="text"
-                name="postalCode"
-                placeholder="Enter postal code"
-                className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200"
-              />
-            </div>
+
+            <FormInput label="City" name="city" placeholder="Enter city" />
+            <FormInput label="State" name="state" placeholder="Enter state" />
+            <FormInput label="Postal Code" name="postalCode" placeholder="Enter postal code" />
           </div>
           {errors.address && (
             <p className="text-red-500 text-sm mt-2">{errors.address}</p>
@@ -328,11 +242,10 @@ function Adminregister() {
 
         {/* Message Display */}
         {message && (
-          <div className={`p-4 rounded-lg ${
-            message.includes("successfully") 
-              ? "bg-green-100 text-green-800 border border-green-400" 
-              : "bg-red-100 text-red-800 border border-red-400"
-          }`}>
+          <div className={`p-4 rounded-lg ${message.includes("successfully")
+            ? "bg-green-100 text-green-800 border border-green-400"
+            : "bg-red-100 text-red-800 border border-red-400"
+            }`}>
             <div className="flex items-center">
               {message.includes("successfully") ? (
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">

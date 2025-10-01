@@ -37,7 +37,7 @@ console.log(session);
     <div className="min-h-screen bg-gradient-to-br mt-46 from-blue-50 to-indigo-100 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <Header userName={session?.user?.name} />
+        <Header userName={session?.user?.name} isAdmin={session?.user?.isAdmin} />
 
         {/* Add Product Form */}
       
