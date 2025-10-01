@@ -1,7 +1,8 @@
 import Product from '../../../modules/product'
 import connectDB from '../../../lib/mongoose'
 import { NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
+
+import cloudinary from '../../../lib/cloudinary';
 import { join } from 'path'
 
 
@@ -28,32 +29,37 @@ export async function POST(request){
         const admin = formData.get('admin')
         const mrp = formData.get('mrp')
         const moreString = formData.get('more')
-        const more = moreString ? JSON.parse(moreString) : []
+        const more = moreString ? JSON.parse
+
+
+
+        (moreString) : []
         if (!imageFile) {
             return NextResponse.json({message: 'No image file provided'}, {status: 400});
         }
 
+        const buffer = Buffer.from(await imageFile.arrayBuffer());
 
+        
+        const uploadResult = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: `uploads/${userName || 'default'}` },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            stream.end(buffer);
+          });
+
+
+          const imageUrl = uploadResult.secure_url;
         // Create uploads directory if it doesn't exist
-        const uploadsDir = join(process.cwd(), 'public', 'uploads', userName || 'default');
-        try {
-            await mkdir(uploadsDir, { recursive: true });
-        } catch (error) {
-            // Directory already exists
-        }
-
-        // Generate unique filename
-        const timestamp = Date.now();
-        const filename = `${timestamp}-${imageFile.name}`;
-        const filepath = join(uploadsDir, filename);
+        
 
         // Save file
         const bytes = await imageFile.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        await writeFile(filepath, buffer);
 
-        // Create image URL
-        const imageUrl = `/uploads/${userName || 'default'}/${filename}`;
 
         const product = await Product.create({
             name, 
