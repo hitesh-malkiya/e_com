@@ -7,6 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Adminregister from "../Adminregister";
 import { getorder } from "@/lib/orderGet";
 import Order from "@/app/components/Order";
+import Link from "next/link";
 
 export default async function Page({ searchParams, params }) {
   // Get slug from params
@@ -32,12 +33,12 @@ export default async function Page({ searchParams, params }) {
             <p className="text-[var(--text-color)] mb-6">
               You need to be logged in to access this page.
             </p>
-            <a
+            <Link
               href="/log-in"
               className="bg-[var(--sec-accent-color)] hover:bg-[var(--accent-color)] text-[var(--bg-color)] font-semibold py-3 px-8 rounded-lg transition duration-200 inline-block"
             >
               Login
-            </a>
+            </Link>
           </div>
         </div>
       </div>
