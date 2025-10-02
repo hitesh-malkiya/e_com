@@ -113,8 +113,8 @@ async function Page({ searchParams, params }) {
                 }
               </div>
               <div className="flex gap-8 mt-6 ">
-                <Button link={'product'} data={'Add to Cart'} variant="primary" />
-                <Button link={'product'} data={' buy now '} variant="primary" />
+                <AddToCartButton  productId={ product._id}/>
+                <Buybtn productId={ product._id} />
               </div>
 
 
@@ -126,7 +126,7 @@ async function Page({ searchParams, params }) {
       })
       }
 
-<Categorie categorieName={productsData[0].category} searchParams={searchParams} />
+      <Categorie categorieName={productsData[0].category} searchParams={searchParams} />
 
     </div>
   )
