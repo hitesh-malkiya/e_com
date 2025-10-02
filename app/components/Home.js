@@ -24,7 +24,7 @@ export const Home = () => {
             </p>
             {/* Main Heading */}
             <h1 className="text-4xl md:text-6xl font-bold text-[var(--text-color)] leading-tight">
-              GUJJU COLLECTION
+            gujarat collection
             </h1>
             <p className=" text-base tracking-[3px] leading-[1.5] text-[var(--text-color)] max-w-xl mx-auto md:mx-0">
               Discover the latest trends and exclusive deals on fashion, electronics, and more. Shop now and enjoy unbeatable prices!
