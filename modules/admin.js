@@ -51,7 +51,7 @@ const adminSchema = new mongoose.Schema({
   razorpaySecret: {
     type: String,
     trim: true,
-    select: false,
+
     default: "",
   },
   isAdmin: {

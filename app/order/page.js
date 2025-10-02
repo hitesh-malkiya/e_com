@@ -26,6 +26,8 @@ function Page({ searchParams }) {
 
       const price = res?.data?.products?.[0]?.price;
       const adminData = res?.data?.products?.[0]?.admin;
+      console.log(adminData);
+
       setAdmin(adminData);
       return price;
     } catch (err) {
@@ -65,23 +67,7 @@ function Page({ searchParams }) {
       document.body.appendChild(script);
     });
   };
-  // get data from admin api
-  // const getAdminData = async () => {
-  //   try {
-  //     const response = await axios.get('/api/admin');
-  //     console.log(response);
-  //     return response.data;
 
-
-  //   } catch (error) {
-  //     console.error('Failed to fetch admin data:', error);
-  //     return null;
-  //   }
-  // };
-  // useEffect(() => {
-  //   // Call getAdminData when the page loads
-  //   getAdminData();
-  // }, []);
 
 
   const handelOrderForm = async (e) => {
@@ -122,12 +108,11 @@ function Page({ searchParams }) {
       console.log(response)
       const ok = await loadRazorpayScript();
       if (!ok) throw new Error("Razorpay SDK failed to load");
-      const key = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
       const { data } = response
       const opstion = {
-        key,
-        order_id: data.id,
+        key: data.key,
+        order_id: data.order.id,
         theme: { color: "#111111" },
         amount: amount,
         currency: "INR",
@@ -143,33 +128,31 @@ function Page({ searchParams }) {
           phone: phone
         },
         handler: async function (response) {
-          // console.log("Payment Success Response:", response);
+          console.log("Payment Success Response:", response);
+          response.admin = admin;
+          // Step 3: Verify payment
+          const verifyRes = await fetch(`api/payment-verify`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(response)
+          });
+          const verifyData = await verifyRes.json();
 
-          // // Step 3: Verify payment
-          // const verifyRes = await fetch('api/payment-verify', {
-          //   method: "POST",
-          //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify(response)
-          // });
-          // const verifyData = await verifyRes.json();
+          console.log(verifyData);
 
-
-          // alert(verifyData.message);
+          alert(verifyData.message);
 
 
 
           try {
-            const response = await axios.put("/api/payment", { id: data.id });
+            const response = await axios.put(`/api/payment`, { id: data.order.id });
             console.log(response);
 
           } catch (error) {
             console.log(error);
 
           }
-          // response.razorpay_payment_id
-          // response. data.id
-          // response.razorpay_signature
-          // Delete productId from localStorage after successful payment
+
           if (typeof window !== 'undefined') {
             localStorage.removeItem('productId');
           }

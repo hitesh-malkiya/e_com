@@ -1,5 +1,7 @@
 
+import { decrypt } from "@/lib/crypto";
 import connectDB from "@/lib/mongoose";
+import Admin from "@/modules/admin";
 import Order from "@/modules/order";
 import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
@@ -9,66 +11,80 @@ import Razorpay from "razorpay";
 
 export async function POST(req) {
 
-    
-    try {
 
-        const razorpay = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_KEY_SECRET,
-        
-        })
-        await connectDB()
-        const a = await req.json();
-        const {admin,  user, orderId, quantity, userName, email, payAmount, fullName, address, city, state, postalCode, phone } = a;
-    
+  try {
 
 
-        const receiptNo = `${Date.now()}`;
 
+
+
+
+
+    await connectDB()
+    const a = await req.json();
+    const { admin, user, orderId, quantity, userName, email, payAmount, fullName, address, city, state, postalCode, phone } = a;
+
+
+
+    const receiptNo = `${Date.now()}`;
+
+
+  
+    const cred = await Admin.findOne({ userName: admin });
+
+if (!cred) return NextResponse.json({ error: `Admin '${admin}' not found` }, { status: 404 });
+if (!cred.razorpayId || !cred.razorpaySecret) return NextResponse.json({ error: "Razorpay credentials not set" , status: 400 });
+console.log("Decrypted ID:", decrypt(cred.razorpayId));
+console.log("Decrypted Secret:", decrypt(cred.razorpaySecret));
+
+const key_id = decrypt(cred.razorpayId);
+const key_secret = decrypt(cred.razorpaySecret);
+
+const razorpay = new Razorpay({ key_id, key_secret });
 
         let oder = {
-            amount: Math.round(payAmount * 100),
-            currency: "INR",
+    amount: Math.round(payAmount * 100),
+    currency: "INR",
 
-        }
+  }
 
-        if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-            return NextResponse.json({ error: 'Razorpay keys missing' }, { status: 500 });
-          }
-        const x = await razorpay.orders.create(oder)
-        let { id, amount, status } = x
+  // if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+  //     return NextResponse.json({ error: 'Razorpay keys missing' }, { status: 500 });
+  //   }
+  const x = await razorpay.orders.create(oder)
+  let { id, amount, status } = x
 
-        const order = await Order.create({
-            admin,
-            user,
-            id,
-            status:"shipped",
-            productID:orderId,
-            receipt:receiptNo,
-            quantity,
-            userName,
-            email,
-            payAmount,
-            amount,
-            shippingAddress: {
-                fullName,
-                address,
-                city,
-                state,
-                postalCode,
-                phone
-            },
-            
-            paymentMethod:'cod',
-            paymentStatus:status
-        });
+  const order = await Order.create({
+    admin,
+    user,
+    id,
+    
+    status: "shipped",
+    productID: orderId,
+    receipt: receiptNo,
+    quantity,
+    userName,
+    email,
+    payAmount,
+    amount,
+    shippingAddress: {
+      fullName,
+      address,
+      city,
+      state,
+      postalCode,
+      phone
+    },
 
+    paymentMethod: 'cod',
+    paymentStatus: status
+  });
 
+return NextResponse.json({ order, key: key_id , razorpayOrder: x }, { status: 201 });
 
-        return new NextResponse(JSON.stringify( x))
-    } catch (err) {
-        return NextResponse.json({ error: err?.message || "Servereeeeeeee error", err });
-    }
+} catch (err) {
+  return NextResponse.json({ error: err?.message || "Servereeeeeeee error", err });
+}
 }
 
 
@@ -77,33 +93,33 @@ export async function POST(req) {
 
 
 export async function PUT(req) {
-    try {
-      await connectDB(); // wait for DB connection
-  
-      const { id } = await req.json();
-      if (!id) {
-        return NextResponse.json({ error: "Order ID is required" }, { status: 200 });
-      }
-      const order = await Order.findOne({ id });
-      if (!order) {
-        return NextResponse.json({ error: "Order not found" }, { status: 200 });
-      }
-  
-      order.paymentStatus = "success";
-      order.orderStatus = "Shipping";
-  
-      await order.save(); // save the order
-  
-      return NextResponse.json(order, { status: 200 });
-    } catch (err) {
-      
-      return NextResponse.json(err, { status: 200 });
+  try {
+    await connectDB(); // wait for DB connection
+
+    const { id } = await req.json();
+    if (!id) {
+      return NextResponse.json({ error: "Order ID is required" }, { status: 200 });
     }
+    const order = await Order.findOne({ id });
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 200 });
+    }
+
+    order.paymentStatus = "success";
+    order.orderStatus = "Shipping";
+
+    await order.save(); // save the order
+
+    return NextResponse.json(order, { status: 200 });
+  } catch (err) {
+
+    return NextResponse.json(err, { status: 200 });
+  }
 }
 
 
 
- 
+
 
 export async function GET(req) {
   try {

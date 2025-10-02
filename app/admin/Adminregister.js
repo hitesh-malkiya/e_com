@@ -198,7 +198,7 @@ console.log(response);
           <FormInput
             label="Razorpay Secret (Optional)"
             name="razorpaySecret"
-            type="password"
+            type="text"
             placeholder="Enter Razorpay Secret"
           />
         </div>

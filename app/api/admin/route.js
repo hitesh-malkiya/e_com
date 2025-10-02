@@ -1,3 +1,4 @@
+import { encrypt } from "@/lib/crypto";
 import connectDB from "@/lib/mongoose";
 import Admin from "@/modules/admin";
 import User from "@/modules/user";
@@ -23,6 +24,9 @@ export async function POST(req) {
             firstLogin 
         } = data;
         
+
+
+
         // Validate required fields
         if (!fullName || !email || !password) {
             return NextResponse.json({ 
@@ -102,8 +106,8 @@ export async function POST(req) {
             isAdmin: isAdmin !== undefined ? isAdmin : true,
             brand: brand ? brand.trim() : "",
             logoImg: logoImg || "",
-            razorpayId: razorpayId || "",
-            razorpaySecret: razorpaySecret || "",
+            razorpayId: razorpayId ? encrypt(razorpayId) : "",
+            razorpaySecret: razorpaySecret ? encrypt(razorpaySecret) :  " ",
             address: address || {
                 address: "",
                 city: "",
@@ -165,61 +169,24 @@ export async function POST(req) {
 export async function GET(req) {
     try {
         await connectDB();
-        
-        // Get query parameters for filtering
         const { searchParams } = new URL(req.url);
-        const search = searchParams.get('search') || '';
-        const isActive = searchParams.get('isActive');
         const userName = searchParams.get('userName');
-        const email = searchParams.get('email');
-        const id = searchParams.get('id');
-        
-        // Build filter object
-        const filter = {};
-        
-        // If specific ID is provided, find by ID
-        if (id) {
-            filter._id = id;
-        }
-        // If userName is provided, find by userName
-        else if (userName) {
-            filter.userName = userName;
-        }
-        // If email is provided, find by email
-        else if (email) {
-            filter.email = email;
-        }
-        // If search is provided, search across multiple fields
-        else if (search) {
-            filter.$or = [
-                { fullName: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } },
-                { userName: { $regex: search, $options: 'i' } },
-                { brand: { $regex: search, $options: 'i' } }
-            ];
-        }
-        
-        // Add isActive filter if provided
-        if (isActive !== null && isActive !== undefined) {
-            filter.isActive = isActive === 'true';
-        }
-        
-        // Fetch a single admin with ALL data (including secrets and password)
-        const admin = await Admin.findOne(filter);
-
-        if (!admin) {
-            return NextResponse.json({ 
+        if (!userName) {
+            return NextResponse.json({
                 success: false,
-                error: "Admin not found" 
+                error: "userName query parameter is required"
+            }, { status: 400 });
+        }
+        const admin = await Admin.findOne({ userName });
+        if (!admin) {
+            return NextResponse.json({
+                success: false,
+                error: "Admin not found"
             }, { status: 404 });
         }
-
-        // Also fetch admin users (users with isAdmin: true) for context
-        const adminUsers = await User.find({ isAdmin: true })
-            .select('-password');
-
-        return NextResponse.json({ 
+        return NextResponse.json({
             success: true,
+            admin,
             data: {
                 admin: {
                     id: admin._id,
@@ -239,17 +206,14 @@ export async function GET(req) {
                     lastLogin: admin.lastLogin,
                     createdAt: admin.createdAt,
                     updatedAt: admin.updatedAt
-                },
-                
-                adminUsers: adminUsers,
-                totalAdminUsers: adminUsers.length
+                }
             }
         });
     } catch (err) {
         console.error('Admin fetch error:', err);
-        return NextResponse.json({ 
+        return NextResponse.json({
             success: false,
-            error: err?.message || "Server error" 
+            error: err?.message || "Server error"
         }, { status: 500 });
     }
 }
