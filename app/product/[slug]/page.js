@@ -1,5 +1,7 @@
 
+import { AddToCartButton } from '@/app/components/AddToCartButton';
 import { Button } from '@/app/components/Botton';
+import { Buybtn } from '@/app/components/Buybtn';
 import Categorie from '@/app/components/Categorie';
 
 import NotFound from '@/app/not-found';
