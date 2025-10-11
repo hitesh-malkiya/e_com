@@ -22,7 +22,7 @@ function Getproduct(params) {
                         key={product._id}
                         className="flex flex-col gap-3 w-[20vw] p-4 rounded-lg  border-[var(--accent-color)] bg-[var(--bg-color)] shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] hover:-translate-y-0.5 transition duration-300"
                     >
-                        {/* image div */}
+                       
                         <div className="">
                             <Link href={`/product/${product._id}`} className="">
                                 {product.image ? (

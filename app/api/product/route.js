@@ -7,16 +7,16 @@ import { join } from 'path'
 
 
 
-export async function POST(request){
+export async function POST(request) {
 
-    
-    
-    try{
+
+
+    try {
         await connectDB();
-        
+
         // Parse form data
         const formData = await request.formData();
-        
+
 
         const stock = formData.get('stock');
         const mainDes = formData.get('mainDes');
@@ -33,39 +33,39 @@ export async function POST(request){
 
 
 
-        (moreString) : []
+            (moreString) : []
         if (!imageFile) {
-            return NextResponse.json({message: 'No image file provided'}, {status: 400});
+            return NextResponse.json({ message: 'No image file provided' }, { status: 400 });
         }
 
         const buffer = Buffer.from(await imageFile.arrayBuffer());
 
-        
+
         const uploadResult = await new Promise((resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream(
-              { folder: `uploads/${userName || 'default'}` },
-              (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-              }
+                { folder: `uploads/${userName || 'default'}` },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
             );
             stream.end(buffer);
-          });
+        });
 
 
-          const imageUrl = uploadResult.secure_url;
+        const imageUrl = uploadResult.secure_url;
         // Create uploads directory if it doesn't exist
-        
+
 
         // Save file
         const bytes = await imageFile.arrayBuffer();
 
 
         const product = await Product.create({
-            name, 
-            price: parseFloat(price), 
+            name,
+            price: parseFloat(price),
             mrp,
-            image: imageUrl, 
+            image: imageUrl,
             category,
             stock,
             admin,
@@ -73,33 +73,37 @@ export async function POST(request){
             mainDes,
             brand
         });
-        
+
         return NextResponse.json(product);
-    }catch(error){
-        
-        return NextResponse.json({message: error.message}, {status: 500});
+    } catch (error) {
+
+        return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
 
 
 
 export async function DELET(params) {
-    try{
-await connectDB()
+    try {
+        await connectDB()
 
-    }catch{
+    } catch {
 
     }
-    
+
 }
 
 export async function GET(request) {
     try {
+  
+        
         await connectDB();
         // Get query parameters from URL
         const { searchParams } = new URL(request.url);
-        const category = searchParams.get('category');
-       const admin =searchParams.get('admin')
+        const category = searchParams.get('category')
+           
+     
+        const admin = searchParams.get('admin')
         const minPrice = searchParams.get('minPrice');
         const maxPrice = searchParams.get('maxPrice');
         const search = searchParams.get('search');
@@ -108,22 +112,22 @@ export async function GET(request) {
         const sortBy = searchParams.get('sortBy') || 'name';
         const sortOrder = searchParams.get('sortOrder') || 'asc';
         const id = searchParams.get('id');
-        
+     
         // Build query object
         let query = {};
-        
+
         // Category filter
         if (category) {
             query.category = category;
         }
-        
+
         // Price range filter
         if (minPrice || maxPrice) {
             query.price = {};
             if (minPrice) query.price.$gte = parseFloat(minPrice);
             if (maxPrice) query.price.$lte = parseFloat(maxPrice);
         }
-        
+
         // Search by name
         if (search) {
             query.name = { $regex: search, $options: 'i' };
@@ -134,24 +138,24 @@ export async function GET(request) {
         if (admin) {
             query.admin = admin;
         }
-        
+
         // Build sort object
         const sort = {};
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
-        
+
         // Calculate skip for pagination
         const skip = (page - 1) * limit;
-        
- 
+
+
         const products = await Product.find(query)
             .sort(sort)
             .limit(limit)
             .skip(skip);
-        
+
         // Get total count for pagination
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / limit);
-        
+
         return NextResponse.json({
             products,
             pagination: {
@@ -162,8 +166,9 @@ export async function GET(request) {
                 hasPrevPage: page > 1
             }
         });
-        
+
     } catch (error) {
-        return NextResponse.json({message:  "error"}, error);
+        
+        return NextResponse.json({ message: "error" }, error);
     }
 }

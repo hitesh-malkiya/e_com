@@ -12,24 +12,25 @@ import { Buybtn } from './Buybtn';
 async function Categories({ searchParams }) {
 
   const categorieName = [
+
     "T-Shirts",
     "Formal Shirts",
     "Casual Shirts",
-    "Jeans",
-    "Casual pants",
-    "Formal pants",
-    "Track Pants",
-    "Cargos ",
-    "Jackets",
-    "Blazers",
-    "Kurtis",
-    "Chaniya Choli",
-    "Party Dresses",
-    "Dresses",
-    "Tops",
-    "Night Dresses",
-    "Sweaters",
-    "Jeans",
+    // "Jeans",
+    // "Casual pants",
+    // "Formal pants",
+    // "Track Pants",
+    // "Cargos ",
+    // "Jackets",
+    // "Blazers",
+    // "Kurtis",
+    // "Chaniya Choli",
+    // "Party Dresses",
+    // "Dresses",
+    // "Tops",
+    // "Night Dresses",
+    // "Sweaters",
+    // "Jeans",
   ];
 
   const tamp = await searchParams
@@ -37,6 +38,7 @@ async function Categories({ searchParams }) {
   let products = [];
   try {
     const res = await getProducts(queryString);
+    
     if (res.message === "error") {
       products = [];
     }
@@ -44,6 +46,7 @@ async function Categories({ searchParams }) {
   } catch (err) {
     products = [];
   }
+  
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -64,11 +67,16 @@ async function Categories({ searchParams }) {
       </div>
       <div>
         {queryString ? <>
+      {  products.length === 0 ? <div className='text-center text-2xl py-16'>No products found</div>: <> 
+ 
+  
           <h3 className="py-[1lh] w-full text-2xl text-center after:content-[''] after:block after:w-[80px] after:h-[5px] after:mx-auto after:mt-[10px] after:rounded-[10px] after:bg-[var(--sec-accent-color)]">{products[0].category}</h3>
           <Getproduct productData={products}  >
             <AddToCartButton />
             <Buybtn />
           </Getproduct>
+          </>
+}
         </> : (
           <>
             {

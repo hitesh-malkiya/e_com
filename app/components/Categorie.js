@@ -13,7 +13,9 @@ async function Categorie({categorieName , searchParams}) {
   
     let productsData = [];
     try {
-      const res = await getProductsSort(queryString, categorieName , 'category');
+
+      const res = await getProductsSort(queryString,categorieName, 'category');
+      
       productsData = res?.data?.products || [];
 
       
