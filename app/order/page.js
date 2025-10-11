@@ -176,7 +176,7 @@ alert(" address not saved ")
 
 
       const opstion = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_RGXGHBZNzDL0AE",
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         order_id: data.order.id,
         theme: { color: "#111111" },
         amount: amount,
