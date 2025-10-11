@@ -171,7 +171,7 @@ const handelRazorpay = async () => {
 
 setFundAccountId(response.data.fund_account.id);
 setContactId(response.data.fund_account.contact_id);
-alert(response.data.fund_account.message)
+alert("Razorpay account created successfully.");
 
   }  catch (err) {
 

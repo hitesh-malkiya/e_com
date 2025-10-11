@@ -22,7 +22,6 @@ export default async function Page({ searchParams, params }) {
   }
 
 
-console.log(session);
 
 
 
@@ -41,10 +40,7 @@ console.log(session);
         {/* Header */}
         <Header userName={session?.user?.name} isAdmin={session?.user?.isAdmin} />
 
-        {/* Add Product Form */}
-      
-        {/* Products List */}
-        {/* <ProductsList   userName={session?.user?.userName}/> */}
+       
         <OrderData userName={session?.user?.userName} />
       </div>
     </div>

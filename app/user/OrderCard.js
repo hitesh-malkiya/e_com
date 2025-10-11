@@ -27,7 +27,6 @@ function normalizeTracking(raw) {
   // case when object has a numeric key like "993975537": { tracking_data: { ... } }
   const firstKey = Object.keys(raw)[0];
   let tracking_data = null;
-  console.log("firstKey ", firstKey);
 
   if (raw.tracking_data) {
     tracking_data = raw.tracking_data;

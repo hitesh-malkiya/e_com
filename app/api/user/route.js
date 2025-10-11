@@ -133,7 +133,7 @@ export async function PUT(request) {
       )
     } 
     user.oder.push(id);
-console.log(user);
+
 
     // Save the updated user
     await user.save();

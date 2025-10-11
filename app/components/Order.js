@@ -42,7 +42,6 @@ const Order = ({ orders }) => {
 
   }
 
-
   if (orders.length === 0) {
     return (
       <div className="p-6 mt-24">

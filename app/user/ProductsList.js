@@ -20,11 +20,9 @@ async function ProductsList({ queryStringURL, userName }) {
     let cardProduct = [];
     try {
         const res = await getUser(userName)
-        console.log(res);
         
         cardProduct = res?.data?.user?.adtocard
     } catch (err) {
-console.log(err);
 
         cardProduct = [];
     }

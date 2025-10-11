@@ -104,7 +104,7 @@ export async function GET(params) {
 
 
     if (!id) {
-      return NextResponse.json({ message: "iderywryuhuh not fond" })
+      return NextResponse.json({ message: "error" })
     }
     await connectDB()
     const order = await Order.findOne({ id })

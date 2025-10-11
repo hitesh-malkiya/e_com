@@ -29,7 +29,6 @@ pdata = pres.data
 
 
     }catch(err){
-console.log(err);
 
     }
   return (

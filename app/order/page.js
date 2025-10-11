@@ -147,8 +147,7 @@ const cities = [
 
       });
 
-      console.log({ response: response.data.order.id });
-
+     
  const orderPost = await axios.post('/api/orderPost', {
             userName: admin,
             orderId: response.data.order.id,
@@ -163,13 +162,13 @@ alert(" address not saved ")
       const ok = await loadRazorpayScript();
       if (!ok) throw new Error("Razorpay SDK failed to load");
       const { data } = response
-      console.log("aaa thi salo");
+      ("aaa thi salo");
       const userOrder = await axios.put('/api/user', {
         userName: session?.user?.userName,
         id: data.order.id
       })
       const userOrderData = await userOrder.data;
-      console.log({ userOrderData });
+     
 
 
 
@@ -218,7 +217,6 @@ alert(" address not saved ")
             body: JSON.stringify({ razorpay_payment_id, razorpay_order_id, razorpay_signature, admin })
           });
           const result = await res.json();
-          console.log({ result });
 
 
           const orderPost = await axios.post('/api/orderPost', {
@@ -226,7 +224,6 @@ alert(" address not saved ")
             orderId: data.order.id,
             landmark: orderFormData.current.landmark.value || ""
           });
-          console.log({ orderPost: orderPost.data });
 
           if (typeof window !== 'undefined') {
             localStorage.removeItem('productId');
