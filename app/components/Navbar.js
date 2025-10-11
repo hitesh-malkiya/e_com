@@ -16,7 +16,6 @@ async function Navbar() {
     return <NavbarUi admin={false} user={null} session={null} logoSrc={'/image/logo.png'} />
   }
 
-  
   const admin = session?.user.admin?.isAdmin || false
   const user = session?.user.admin?.userName || null
 

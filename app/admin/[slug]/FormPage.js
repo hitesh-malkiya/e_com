@@ -6,11 +6,30 @@ import axios from 'axios'
 
 function FormPage({ slug }) {
 
-
+  const categorieName = [
+    "T-Shirts",
+    "Formal Shirts",
+    "Casual Shirts",
+    "Jeans",
+    "Casual pants",
+    "Formal pants",
+    "Track Pants",
+    "Cargos ",
+    "Jackets",
+    "Blazers",
+    "Kurtis",
+    "Chaniya Choli",
+    "Party Dresses",
+    "Dresses",
+    "Tops",
+    "Night Dresses",
+    "Sweaters",
+    "Jeans",
+  ];
   const formData = useRef(null);
   // form select care se
   const [btnactiv, setBtnactiv] = useState(false)
-  // form submit time btn desabal mate
+
   const [detailInputs, setDetailInputs] = useState([
     { id: 1, label: '', value: '' },
 
@@ -44,8 +63,6 @@ function FormPage({ slug }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setBtnactiv(true)
-
-    // Use the state data instead of querying DOM
     const pairs = detailInputs
       .filter(input => input.label.trim() || input.value.trim())
       .map(input => ({ label: input.label.trim(), value: input.value.trim() }));
@@ -72,10 +89,10 @@ function FormPage({ slug }) {
       })
 
 
-      // formData.current.reset();
+
       setBtnactiv(false)
-      // Refresh the product list after adding
-      alert('product apend ucseefuly dont whary')
+
+      alert('product successfully dont')
     } catch (error) {
       alert(error.response.data.message)
       setBtnactiv(false)
@@ -109,11 +126,11 @@ function FormPage({ slug }) {
           <Inputs data={'MRP'} type={'number'} names={'mrp'} />
 
           <Inputs data={'stock'} type={'number'} names={'stock'} />
-        
+
           {/* Product Image */}
 
-          <Inputs data={' Product Image'} type={'file'} names={"image"}/>
-         
+          <Inputs data={' Product Image'} type={'file'} names={"image"} />
+
           {/* Category */}
 
 
@@ -127,17 +144,10 @@ function FormPage({ slug }) {
               className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg  focus:border-transparent transition duration-200"
             >
               <option value="">select category</option>
-              <option value="mobiles">mobiles</option>
-              <option value="laptops">laptops</option>
-              <option value="computers">computers</option>
-              <option value="men">men</option>
-              <option value="women">women</option>
-              <option value="kids">kids</option>
-              <option value="bags">bags</option>
-              <option value="accessories">accessories</option>
-              <option value="books">books</option>
-              <option value="toys">toys</option>
-              <option value="other">other</option>
+              {categorieName.map((item, index) => (
+                <option key={index} value={item}> {item} </option>
+              ))
+              }
             </select>
           </div>
         </div>
@@ -176,20 +186,20 @@ function FormPage({ slug }) {
                 )}
               </div>
             ))}
-          
+
           </div>
         </div>
         <div className="flex items-center gap-10">
-        <button
-              type="button"
-              onClick={addDetailInput}
-              className=" px-4 py-3 bg-[var(--sec-accent-color)] hover:bg-[var(--accent-color)]  text-[var(--bg-color)] rounded-lg transition duration-200 flex items-center justify-center"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Add More Details
-            </button>
+          <button
+            type="button"
+            onClick={addDetailInput}
+            className=" px-4 py-3 bg-[var(--sec-accent-color)] hover:bg-[var(--accent-color)]  text-[var(--bg-color)] rounded-lg transition duration-200 flex items-center justify-center"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add More Details
+          </button>
           <button
             type='submit'
             disabled={btnactiv}

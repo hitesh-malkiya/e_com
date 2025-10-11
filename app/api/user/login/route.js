@@ -15,6 +15,7 @@ export async function POST(request) {
       )
     }
 
+    
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI)
 

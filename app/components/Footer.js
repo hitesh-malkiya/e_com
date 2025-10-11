@@ -21,6 +21,7 @@ function Footer() {
           </ul>
         </div>
         <div>
+          
           <h4 className="font-semibold mb-4">Customer Service</h4>
           <ul className="space-y-2 text-gray-300">
             <li><a href="#" className="hover:text-white">Shipping Info</a></li>

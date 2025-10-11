@@ -13,6 +13,7 @@ function Header({userName}) {
       <span className="text-2xl text-[var(--text-color)] font-[600] ">
       Welcome, to admin dasbord {userName || 'gust'}
       </span>
+      
       <button
         onClick={() => signOut({ callbackUrl: '/' })}
         className=" bg-[var(--sec-accent-color)]  hover:bg-[var(--accent-color)] text-[var(--bg-color)] font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center"

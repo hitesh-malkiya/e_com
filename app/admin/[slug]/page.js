@@ -45,7 +45,6 @@ export default async function Page({ searchParams, params }) {
     );
   }
 
-  // Check if user is admin and matches the slug
   if (
     !session.user.admin ||
     !session.user.admin.isAdmin ||
@@ -64,9 +63,12 @@ export default async function Page({ searchParams, params }) {
   let orders = [];
   try {
     const res = await getorder(session.user.admin.userName);
-    orders = res.data;
+    if(res.message === "error") {
+        orders = [];
+    } else {
+          orders = res.data;
+    }
   } catch (err) {
-  
     orders = [];
   }
 
@@ -75,10 +77,7 @@ export default async function Page({ searchParams, params }) {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <Header userName={session?.user?.name} />
-
-        {/* Add Product Form */}
         <FormPage slug={slug} />
-        {/* Products List */}
         <Order orders={orders} />
       </div>
     </div>

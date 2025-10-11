@@ -48,6 +48,7 @@ export async function POST(request) {
     user.firstLogin = false
     await user.save()
 
+    
     return NextResponse.json({
       message: "Username and password set successfully",
       user: {

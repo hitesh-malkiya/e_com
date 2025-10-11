@@ -109,11 +109,16 @@ export async function GET(params) {
     await connectDB()
     const order = await Order.findOne({ id })
     const data = order
-
+    if (!data) {
+      return NextResponse.json({ message: "error" })
+    }
+    if (data.length === 0) {
+      return NextResponse.json({ message: "error" })
+    }
     return NextResponse.json({ data })
   } catch (err) {
     console.log(err);
-    return NextResponse.json({ message: "id not fond" })
+    return NextResponse.json({ message: "error" })
 
   }
 }

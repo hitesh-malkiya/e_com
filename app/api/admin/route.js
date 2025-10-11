@@ -18,12 +18,8 @@ export async function POST(req) {
             shiprocketEmail,
             shiprocketPassword,
             shiprocketApiToken,
-            
             isAdmin, 
-            brand, 
-            
-            // razorpayId,
-            // razorpaySecret,
+            brand,
             contactId,
             fundAccountId,
             address,
@@ -34,14 +30,14 @@ export async function POST(req) {
 
 
 
-        // Validate required fields
+    
         if (!fullName || !email || !password) {
             return NextResponse.json({ 
                 error: "Full name, email, and password are required" 
             }, { status: 400 });
         }
 
-        // Validate email format
+
         const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
         if (!emailRegex.test(email)) {
             return NextResponse.json({ 
@@ -139,7 +135,7 @@ export async function POST(req) {
         const admin = await Admin.create(adminData);
 
         return NextResponse.json({ 
-            message: "Admin created successfully",
+            message: "Admin registered successfully",
             admin: {
                 id: admin._id,
                 fullName: admin.fullName,
@@ -205,12 +201,10 @@ export async function GET(req) {
                     fullName: admin.fullName,
                     userName: admin.userName,
                     email: admin.email,
-                    password: admin.password, // Include password
+                    password: admin.password, 
                     brand: admin.brand,
                     logoImg: admin.logoImg,
-                    // razorpayId: admin.razorpayId,
-                    // razorpaySecret: admin.razorpaySecret, // Include secret
-                 
+              
                     contactId: admin.contactId,
                     fundAccountId: admin.fundAccountId,
                     address: admin.address,
@@ -225,7 +219,7 @@ export async function GET(req) {
             }
         });
     } catch (err) {
-        console.error('Admin fetch error:', err);
+        
         return NextResponse.json({
             success: false,
             error: err?.message || "Server error"

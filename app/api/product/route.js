@@ -164,8 +164,6 @@ export async function GET(request) {
         });
         
     } catch (error) {
-      
-        
-        return NextResponse.json('not found , ' , error);
+        return NextResponse.json({message:  "error"}, error);
     }
 }

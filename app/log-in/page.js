@@ -7,11 +7,11 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Loading from '../loading';
 
-export default function Component() {
+export default function Page() {
 
 
- const { data: session } = useSession()
-const {status} = useSession()
+  const { data: session } = useSession()
+  const { status } = useSession()
 
 
 
@@ -33,7 +33,7 @@ const {status} = useSession()
 
 
     } catch (error) {
-
+      alert("somthing went wrong")
     }
   }, []);
 
@@ -41,33 +41,33 @@ const {status} = useSession()
     e.preventDefault();
     setIsLoading(true);
     setMessage('');
-  
+
     const form = new FormData(formRef.current);
     const userName = form.get('userName');
     const password = form.get('password');
-  
+
     const res = await signIn('credentials', {
       redirect: false,
       userName,
       password,
     });
-  
+
     if (res?.ok && !res.error) {
       router.push(`/user`); // or wherever
     } else {
       setMessage('Invalid username or password');
     }
-  
+
     setIsLoading(false);
   };
-  
+
 
   useEffect(() => {
 
-    
+
     if (session) {
 
-      
+
       saveUserToDatabase(session.user)
       router.push('/log-in/setuser');
     }
@@ -76,13 +76,13 @@ const {status} = useSession()
   // Show loading while checking session
 
 
-  if(status=='loading' || session){
-    return(
-      <Loading/>
+  if (status == 'loading' || session) {
+    return (
+      <Loading />
     )
   }
 
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
@@ -112,16 +112,15 @@ const {status} = useSession()
             Username/Password
           </button>
         </div>
-       
+
         {message && (
-          <div className={`mb-4 p-3 rounded-lg ${
-            message.includes('successful') 
-              ? 'bg-green-100 text-green-700' 
+          <div className={`mb-4 p-3 rounded-lg ${message.includes('successful')
+              ? 'bg-green-100 text-green-700'
               : 'bg-red-100 text-red-700'
-          }`}>
+            }`}>
             {message}
           </div>
-        )} 
+        )}
 
         {loginType === 'google' ? (
           <button
@@ -158,7 +157,7 @@ const {status} = useSession()
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center"
             >
-             
+
             </button>
           </form>
         )}

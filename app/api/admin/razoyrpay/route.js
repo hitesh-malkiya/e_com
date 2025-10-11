@@ -9,7 +9,7 @@ export async function POST(req) {
         const key_id = process.env.RAZORPAY_KEY_ID;
         const key_secret = process.env.RAZORPAY_KEY_SECRET;
         const auth = Buffer.from(`${key_id}:${key_secret}`).toString("base64");
-        console.log({ key_id, key_secret, auth });
+
 
         // Step 1: Create Contact
         const contactPayload = {
@@ -27,8 +27,6 @@ export async function POST(req) {
             contactPayload,
             { headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" } }
         );
-        console.log("ahkehhoeoiewjeiw", { contactResponse: contactResponse.data });
-
         const contact_id = contactResponse.data.id;
 
         // Step 2: Create Fund Account (Test Mode)
@@ -42,14 +40,12 @@ export async function POST(req) {
 
             }
         };
-        console.log({ fundAccountPayload });
 
         const fundAccountResponse = await axios.post(
             "https://api.razorpay.com/v1/fund_accounts",
             fundAccountPayload,
             { headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" } }
         );
-        console.log({ fundAccountResponse: fundAccountResponse.data });
 
         return NextResponse.json({
             message: "Test Mode Contact and Fund Account created successfully",
@@ -57,7 +53,7 @@ export async function POST(req) {
         }, { status: 200 });
 
     } catch (err) {
-        console.error("Razorpay Fund Account Error:", err.response?.data || err.message);
-        return NextResponse.json({ error: err.response?.data || err.message }, { status: 400 });
+        
+        return NextResponse.json({ error: err.response?.data || err.message , message:"account not created somthing wrong"}, { status: 400 });
     }
 }

@@ -8,6 +8,7 @@ export default function NotFound() {
         <p style={{ color: '#666', marginBottom: '16px' }}>The page you are looking for doesn&apos;t exist or was moved.</p>
         <Link href="/" style={{ padding: '8px 12px', borderRadius: '6px', background: '#111', color: '#fff' }}>
           Go to Home
+          
         </Link>
       </div>
     </div>

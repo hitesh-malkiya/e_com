@@ -3,8 +3,7 @@ import React from "react";
 
 const Order = ({ orders }) => {
 
-  // 🔹 Helper function to download Shiprocket docs
-
+  
   const handleDownload = async (type, shipmentId, orderId, shipmenOorder_id) => {
     try {
       // Prepare request body
@@ -41,6 +40,16 @@ const Order = ({ orders }) => {
     
   }
 
+  }
+
+
+  if (orders.length === 0) {
+    return (
+      <div className="p-6 mt-24">
+        <h1 className="text-2xl font-bold mb-4">Orders</h1>
+        <p>No orders found.</p>
+      </div>
+    );
   }
   return (
     <div className="p-6">

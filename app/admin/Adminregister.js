@@ -17,6 +17,8 @@ function Adminregister() {
   const [token, setToken] = useState("");
   const [tokenMessage, setTokenMessage] = useState("");
   const { data: session, status } = useSession();
+
+
 const [contactId, setContactId] = useState("");
 const [fundAccountId, setFundAccountId] = useState("");
 
@@ -24,7 +26,7 @@ const [fundAccountId, setFundAccountId] = useState("");
   const validateForm = (data) => {
     const newErrors = {};
 
-    // Full name validation
+
     if (!data.fullName || data.fullName.trim().length < 2) {
       newErrors.fullName = "Full name must be at least 2 characters long";
     } else if (data.fullName.trim().length > 50) {
@@ -91,8 +93,6 @@ const [fundAccountId, setFundAccountId] = useState("");
         shiprocketApiToken: token,
         contactId: contactId,
         fundAccountId: fundAccountId,
-        // razorpayId: get('razorpayId'),
-        // razorpaySecret: get('razorpaySecret'),
         address: {
           address: get('address'),
           city: get('city'),
@@ -112,12 +112,13 @@ const [fundAccountId, setFundAccountId] = useState("");
       const response = await axios.post('/api/admin', data)
 
 
-      if (response?.data?.message) {
+      if (response?.data?.message ) {
         setMessage("Admin registered successfully!")
 
 
 
-        // formEl.reset()
+        formEl.reset()
+
         if (response?.data.admin.userName) {
           router.push(`/admin/${response?.data.admin.userName}`);
         }
@@ -126,8 +127,6 @@ const [fundAccountId, setFundAccountId] = useState("");
       console.error(error);
       const errorMessage = error.response?.data?.error || "Registration failed";
       setMessage(errorMessage);
-
-      // Handle validation errors from server
       if (error.response?.data?.details) {
         setErrors({ server: error.response.data.details });
       }
@@ -138,22 +137,17 @@ const [fundAccountId, setFundAccountId] = useState("");
 
 
   const handlegetToken = async (e) => {
-
     try {
-
       const response = await axios.post('https://apiv2.shiprocket.in/v1/external/auth/login', {
         email: formData.current.shiprocketEmail.value,
         password: formData.current.shiprocketPassword.value
       });
 
       setToken(await response.data.token);
-
       setIsToken(true);
       setTokenMessage("Token fetched successfully!");
 
-
     } catch (err) {
-
       setTokenMessage("Failed to fetch token.");
     }
 
@@ -169,20 +163,19 @@ const handelRazorpay = async () => {
       ifsc: formEl.ifsc.value,
       account_number: formEl.account_number.value
     });
- 
-console.log(response.data);
+    
+    if(response.data.error){
+     alert( response.data.error);
+    
+    }
 
 setFundAccountId(response.data.fund_account.id);
 setContactId(response.data.fund_account.contact_id);
-
-
-
-
-
+alert(response.data.fund_account.message)
 
   }  catch (err) {
 
-    setTokenMessage("Failed to fetch token.");
+ alert( err.message);
   }
 }
 
@@ -264,19 +257,7 @@ setContactId(response.data.fund_account.contact_id);
             type="url"
             placeholder="Enter logo image URL"
           />
-          {/* 
-          <FormInput
-            label="Razorpay ID (Optional)"
-            name="razorpayId"
-            placeholder="Enter Razorpay ID"
-          />
-
-          <FormInput
-            label="Razorpay Secret (Optional)"
-            name="razorpaySecret"
-            type="text"
-            placeholder="Enter Razorpay Secret"
-          /> */}
+        
         </div>
 
 
