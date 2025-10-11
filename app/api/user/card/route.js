@@ -58,8 +58,7 @@ export async function DELETE(req) {
 			const body = await req.json()
 			userName = body?.userName ?? null
 			id = body?.id ?? null
-		
-console.log(userName , id);
+
 
 
 		if (!userName || !id) {

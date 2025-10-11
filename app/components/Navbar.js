@@ -11,11 +11,15 @@ async function Navbar() {
     session = null
   }
 
-console.log( session);
 
- const admin = session?.user.admin?.isAdmin
- const user = session?.user.admin?.userName
+  if (!session || !session?.user) {
+    return <NavbarUi admin={false} user={null} session={null} logoSrc={'/image/logo.png'} />
+  }
+
   
+  const admin = session?.user.admin?.isAdmin || false
+  const user = session?.user.admin?.userName || null
+
   const logoSrc = session?.user?.image || '/image/logo.png'
 
   return (

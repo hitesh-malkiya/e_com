@@ -37,7 +37,7 @@ function DeletCard({ productId, data }) {
             })
 
             if (response?.status === 200) {
-                console.log(response);
+         
                 
                 alert(response?.data?.message)
                 router.refresh()

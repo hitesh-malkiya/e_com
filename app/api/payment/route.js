@@ -1,119 +1,120 @@
-
-import { decrypt } from "@/lib/crypto";
 import connectDB from "@/lib/mongoose";
-import Admin from "@/modules/admin";
 import Order from "@/modules/order";
-import { NextResponse } from "next/server";
+
 import Razorpay from "razorpay";
+import { NextResponse } from "next/server";
 
 
-
-
+// ------------------ CREATE ORDER ------------------
 export async function POST(req) {
-
-
   try {
-
-
-
-
-
-
-
-    await connectDB()
-    const a = await req.json();
-    const { admin, user, orderId, quantity, userName, email, payAmount, fullName, address, city, state, postalCode, phone } = a;
-
-
-
-    const receiptNo = `${Date.now()}`;
-
-
-  
-    const cred = await Admin.findOne({ userName: admin });
-
-if (!cred) return NextResponse.json({ error: `Admin '${admin}' not found` }, { status: 404 });
-if (!cred.razorpayId || !cred.razorpaySecret) return NextResponse.json({ error: "Razorpay credentials not set" , status: 400 });
-console.log("Decrypted ID:", decrypt(cred.razorpayId));
-console.log("Decrypted Secret:", decrypt(cred.razorpaySecret));
-
-const key_id = decrypt(cred.razorpayId);
-const key_secret = decrypt(cred.razorpaySecret);
-
-const razorpay = new Razorpay({ key_id, key_secret });
-
-        let oder = {
-    amount: Math.round(payAmount * 100),
-    currency: "INR",
-
-  }
-
-  // if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-  //     return NextResponse.json({ error: 'Razorpay keys missing' }, { status: 500 });
-  //   }
-  const x = await razorpay.orders.create(oder)
-  let { id, amount, status } = x
-
-  const order = await Order.create({
-    admin,
-    user,
-    id,
-    
-    status: "shipped",
-    productID: orderId,
-    receipt: receiptNo,
-    quantity,
-    userName,
-    email,
-    payAmount,
-    amount,
-    shippingAddress: {
+    await connectDB();
+    const {
+      admin,
+      user,
+      orderId,
+      quantity,
+      userName,
+      email,
+      payAmount,
       fullName,
       address,
       city,
       state,
       postalCode,
-      phone
-    },
+      phone,
 
-    paymentMethod: 'cod',
-    paymentStatus: status
-  });
+    } = await req.json();
 
-return NextResponse.json({ order, key: key_id , razorpayOrder: x }, { status: 201 });
+    if (!admin || !user || !orderId || !payAmount) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
 
-} catch (err) {
-  return NextResponse.json({ error: err?.message || "Servereeeeeeee error", err });
+    const receiptNo = `${Date.now()}`;
+    const key_id = process.env.RAZORPAY_KEY_ID;
+    const key_secret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!key_id || !key_secret) {
+      return NextResponse.json({ error: "Razorpay keys missing" }, { status: 200 });
+    }
+
+    const razorpay = new Razorpay({ key_id, key_secret });
+
+    // Create Razorpay order
+    const orderPayload = {
+      amount: Math.round(payAmount * 100), // paise
+      currency: "INR",
+      receipt: receiptNo
+    };
+    console.log(orderPayload);
+
+    const razorpayOrder = await razorpay.orders.create(orderPayload);
+    console.log(razorpayOrder);
+
+
+
+
+
+    // Save order in DB
+    const order = await Order.create({
+      admin,
+      user,
+      id: razorpayOrder.id,
+      status: "pending",
+      productID: orderId,
+      receipt: receiptNo,
+      quantity,
+      userName,
+      email,
+      payAmount,
+      amount: razorpayOrder.amount,
+      shippingAddress: {
+        fullName,
+        address,
+        city,
+        state,
+        postalCode,
+        phone
+      },
+
+      paymentMethod: "online",
+      paymentStatus: "created"
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Order created",
+      order,
+      razorpayKey: key_id,
+      razorpayOrder
+    });
+
+  } catch (err) {
+    console.error("POST ERROR:", err);
+    return NextResponse.json({ error: err?.message || "Server error" }, { status: 500 });
+  }
 }
-}
 
 
 
-
-
-
-export async function PUT(req) {
+export async function GET(params) {
   try {
-    await connectDB(); // wait for DB connection
+    const { searchParams } = new URL(params.url)
+    const id = searchParams.get("id")
 
-    const { id } = await req.json();
+
     if (!id) {
-      return NextResponse.json({ error: "Order ID is required" }, { status: 200 });
+      return NextResponse.json({ message: "iderywryuhuh not fond" })
     }
-    const order = await Order.findOne({ id });
-    if (!order) {
-      return NextResponse.json({ error: "Order not found" }, { status: 200 });
-    }
+    await connectDB()
+    const order = await Order.findOne({ id })
+    const data = order
 
-    order.paymentStatus = "success";
-    order.orderStatus = "Shipping";
-
-    await order.save(); // save the order
-
-    return NextResponse.json(order, { status: 200 });
+    return NextResponse.json({ data })
   } catch (err) {
+    console.log(err);
+    return NextResponse.json({ message: "id not fond" })
 
-    return NextResponse.json(err, { status: 200 });
   }
 }
 
@@ -121,34 +122,7 @@ export async function PUT(req) {
 
 
 
-export async function GET(req) {
-  try {
-    await connectDB();
 
-    // Extract query params from request URL
-    const { searchParams } = new URL(req.url);
-    const admin = searchParams.get("admin");
 
-    if (!admin) {
-      return NextResponse.json(
-        { error: "Order admin is required" },
-        { status: 400 }
-      );
-    }
 
-    const orders = await Order.find({ admin });
 
-    if (!orders || orders.length === 0) {
-      return NextResponse.json({ error: "Order not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(orders, { status: 200 });
-  } catch (err) {
-    console.error("GET /api/payment error:", err);
-    return NextResponse.json(
-      { error: err?.message || "Server error" },
-      { status: 500 }
-    );
-  }
-
-}

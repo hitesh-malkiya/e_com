@@ -30,7 +30,7 @@ export const AddToCartButton = ({ productId}) => {
             })
 
             if (response?.status === 200) {
-                console.log(response);
+           
                 
                 alert(response?.data?.message)
             }

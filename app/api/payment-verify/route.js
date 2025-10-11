@@ -1,72 +1,55 @@
-import { decrypt } from "@/lib/crypto";
-import Admin from "@/modules/admin";
 import crypto from "crypto";
+import { NextResponse } from "next/server";
+import Admin from "@/modules/admin";
+import Order from "@/modules/order";
+import connectDB from "@/lib/mongoose";
+
 
 export async function POST(req) {
-  try {
+try {
+await connectDB();
 
 
-    // Validate input
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, admin } = await req.json();
+const { razorpay_order_id, razorpay_payment_id, razorpay_signature, admin,orderId } = await req.json();
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !admin) {
-      return new Response(
-        JSON.stringify({ status: "fail", message: "Missing required payment fields or admin userName" }),
-        { status: 400 }
-      );
-    }
+// Validate input
+if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !admin || !orderId) {
+  return NextResponse.json({ status: "fail", message: "Missing required fields" }, { status: 400 });
+}
 
-    // Find admin by userName
-    const cred = await Admin.findOne({ userName: admin });
-    if (!cred) {
-      return new Response(
-        JSON.stringify({ status: "fail", message: "Admin not found" }),
-        { status: 404 }
-      );
-    }
+// Check admin
+const adminData = await Admin.findOne({ userName: admin });
+if (!adminData) {
+  return NextResponse.json({ status: "fail", message: "Admin not found" }, { status: 404 });
+}
 
-  
+// Verify signature
+const secret = process.env.RAZORPAY_KEY_SECRET;
+const body = `${razorpay_order_id}|${razorpay_payment_id}`;
+const expectedSignature = crypto.createHmac("sha256", secret).update(body).digest("hex");
 
-    // Use a constant-time comparison to prevent timing attacks
-    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
-      const secret =decrypt(cred.razorpaySecret)
+if (expectedSignature !== razorpay_signature) {
+  return NextResponse.json({ status: "fail", message: "Payment verification failed ❌" }, { status: 400 });
+}
 
-      if(!secret) {
-        return new Response(
-          JSON.stringify({ status: "fail", message: "Server misconfiguration: missing Razorpay secret" }),
-          { status: 500 }
-        );
-      }
+// Update order
+const order = await Order.findOne({ id: orderId });
+if (!order) {
+  return NextResponse.json({ status: "fail", message: "Order not found" }, { status: 404 });
+}
 
-    const expectedSignature = crypto
-        .createHmac("sha256", secret)
-        .update(body)
-        .digest("hex");
+order.paymentStatus = "success";
+order.orderStatus = "Shipping";
+await order.save();
 
-      // Use timingSafeEqual for better security
-      const isValid =
-        razorpay_signature &&
-        expectedSignature &&
-        crypto.timingSafeEqual(
-          Buffer.from(expectedSignature, "utf8"),
-          Buffer.from(razorpay_signature, "utf8")
-        );
+return NextResponse.json({
+  status: "success",
+  message: "Payment verified and order updated ✅",
+  order,
+}, { status: 200 });
 
-      if(isValid) {
-        return new Response(
-          JSON.stringify({ status: "success", message: "Payment Verified ✅" }),
-          { status: 200 }
-        );
-      } else {
-        return new Response(
-          JSON.stringify({ status: "fail", message: "Payment Verification Failed ❌" }),
-          { status: 400 }
-        );
-      }
-    } catch (err) {
-      return new Response(
-        JSON.stringify({ status: "error", message: err?.message || "Server error" }),
-        { status: 500 }
-      );
-    }
-  }
+
+} catch (err) {
+return NextResponse.json({ status: "error", message: err.message || "Server error" }, { status: 500 });
+}
+}

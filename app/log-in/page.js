@@ -12,7 +12,7 @@ export default function Component() {
 
  const { data: session } = useSession()
 const {status} = useSession()
-console.log(session);
+
 
 
 

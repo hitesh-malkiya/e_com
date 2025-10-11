@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Loading from "../product/loading";
 import Header from "./Header";
 import ProductsList from "./ProductsList";
+import OrderData from "./OrderData";
 
 
 
@@ -25,6 +26,7 @@ console.log(session);
 
 
 
+
   if (!session?.user?.userName) {
     redirect('/log-in');
     return (
@@ -42,7 +44,8 @@ console.log(session);
         {/* Add Product Form */}
       
         {/* Products List */}
-        <ProductsList queryStringURL={queryString}  userName={session?.user?.userName}/>
+        {/* <ProductsList   userName={session?.user?.userName}/> */}
+        <OrderData userName={session?.user?.userName} />
       </div>
     </div>
   )

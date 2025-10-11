@@ -2,11 +2,12 @@
 
 
 import Getproduct from '@/app/components/Getproduct';
-import { getCardProduct, getProductsSort } from '@/lib/Getproduct'
+import { getProductsSort } from '@/lib/Getproduct'
  
 import DeletCard from '../components/DeletCard';
 import Noproduct from '../components/Noproduct';
 import { Buybtn } from '../components/Buybtn';
+import { getUser } from '@/lib/getUserOrder';
 
 async function ProductsList({ queryStringURL, userName }) {
 
@@ -18,9 +19,12 @@ async function ProductsList({ queryStringURL, userName }) {
 
     let cardProduct = [];
     try {
-        const res = await getCardProduct(queryString, userName)
-        cardProduct = res.data.products
+        const res = await getUser(userName)
+        console.log(res);
+        
+        cardProduct = res?.data?.user?.adtocard
     } catch (err) {
+console.log(err);
 
         cardProduct = [];
     }

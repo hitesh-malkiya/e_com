@@ -1,4 +1,4 @@
-import { encrypt } from "@/lib/crypto";
+// import { encrypt } from "@/lib/crypto";
 import connectDB from "@/lib/mongoose";
 import Admin from "@/modules/admin";
 import User from "@/modules/user";
@@ -15,10 +15,17 @@ export async function POST(req) {
             email, 
             password, 
             logoImg, 
+            shiprocketEmail,
+            shiprocketPassword,
+            shiprocketApiToken,
+            
             isAdmin, 
             brand, 
-            razorpayId,
-            razorpaySecret,
+            
+            // razorpayId,
+            // razorpaySecret,
+            contactId,
+            fundAccountId,
             address,
             isActive, 
             firstLogin 
@@ -103,11 +110,16 @@ export async function POST(req) {
             fullName: fullName.trim(),
             email: email.toLowerCase().trim(),
             password: hashedPassword,
+            shiprocketEmail: shiprocketEmail ? shiprocketEmail.trim() : "",
+            shiprocketPassword: shiprocketPassword ? shiprocketPassword.trim() : "",
+            shiprocketApiToken: shiprocketApiToken ? shiprocketApiToken.trim() : "",    
             isAdmin: isAdmin !== undefined ? isAdmin : true,
             brand: brand ? brand.trim() : "",
             logoImg: logoImg || "",
-            razorpayId: razorpayId ? encrypt(razorpayId) : "",
-            razorpaySecret: razorpaySecret ? encrypt(razorpaySecret) :  " ",
+            // razorpayId: razorpayId ? encrypt(razorpayId) : "",
+            // razorpaySecret: razorpaySecret ? encrypt(razorpaySecret) :  " ",
+            contactId: contactId || "",
+            fundAccountId: fundAccountId || "",
             address: address || {
                 address: "",
                 city: "",
@@ -196,8 +208,11 @@ export async function GET(req) {
                     password: admin.password, // Include password
                     brand: admin.brand,
                     logoImg: admin.logoImg,
-                    razorpayId: admin.razorpayId,
-                    razorpaySecret: admin.razorpaySecret, // Include secret
+                    // razorpayId: admin.razorpayId,
+                    // razorpaySecret: admin.razorpaySecret, // Include secret
+                 
+                    contactId: admin.contactId,
+                    fundAccountId: admin.fundAccountId,
                     address: admin.address,
                     orderIds: admin.orderIds,
                     isAdmin: admin.isAdmin,

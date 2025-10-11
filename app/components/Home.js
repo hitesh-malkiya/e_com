@@ -7,7 +7,7 @@ export const Home = () => {
 
 
   return (
-    
+
     <section className="relative bg-[var(--sec-bg-color)] pl-15 pr-5 mt-24 pt-6">
       <div className="container mx-auto px-4">
         <div className='grid grid-cols-1 md:grid-cols-[1fr_0.7fr] items-center gap-12 justify-center'>
@@ -24,20 +24,20 @@ export const Home = () => {
             </p>
             {/* Main Heading */}
             <h1 className="text-4xl md:text-6xl font-bold text-[var(--text-color)] leading-tight">
-            gujarat collection
+              gujarat collection
             </h1>
             <p className=" text-base tracking-[3px] leading-[1.5] text-[var(--text-color)] max-w-xl mx-auto md:mx-0">
               Discover the latest trends and exclusive deals on fashion, electronics, and more. Shop now and enjoy unbeatable prices!
             </p>
 
-   
-                  <div className="pt-8 flex flex-col gap-4 md:flex-row md:items-center">
-                    <Button link={'admin'} data={'Register Your Brand'} variant="primary" size="large" />
-                   
-                  </div>
-                  </div>
 
-                  {/* Right Image */}
+            <div className="pt-8 flex flex-col gap-4 md:flex-row md:items-center">
+              <Button link={'admin'} data={'Register Your Brand'} variant="primary" size="large" />
+
+            </div>
+          </div>
+
+          {/* Right Image */}
           <div className='relative '>
             <Image
 
@@ -108,3 +108,5 @@ export const Home = () => {
     </section>
   )
 }
+
+

@@ -142,11 +142,7 @@ export async function GET(request) {
         // Calculate skip for pagination
         const skip = (page - 1) * limit;
         
-        // Execute query with pagination and sorting
-        console.log('Query:', query);
-        console.log('Sort:', sort);
-        console.log('Limit:', limit, 'Skip:', skip);
-        
+ 
         const products = await Product.find(query)
             .sort(sort)
             .limit(limit)

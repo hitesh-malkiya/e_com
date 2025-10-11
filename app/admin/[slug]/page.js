@@ -11,7 +11,7 @@ import Link from "next/link";
 
 export default async function Page({ searchParams, params }) {
   // Get slug from params
-  const { slug } = params;
+  const { slug } = await params;
 
   // Get session
   let session = null;
@@ -66,7 +66,7 @@ export default async function Page({ searchParams, params }) {
     const res = await getorder(session.user.admin.userName);
     orders = res.data;
   } catch (err) {
-    console.error("Error fetching order:", err);
+  
     orders = [];
   }
 

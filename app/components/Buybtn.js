@@ -27,7 +27,7 @@ export const Buybtn = ({ productId }) => {
                 router.push('/order')
             }
         } catch (error) {
-            console.log(error);
+   
         } finally {
             setLoading(false)
         }

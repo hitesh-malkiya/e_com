@@ -43,17 +43,44 @@ const adminSchema = new mongoose.Schema({
     trim: true,
     default: "",
   },
-  razorpayId: {
-    type: String,
-    trim: true,
-    default: "",
-  },
-  razorpaySecret: {
-    type: String,
-    trim: true,
+  // razorpayId: {
+  //   type: String,
+  //   trim: true,
+  //   default: "",
+  // },
+  // razorpaySecret: {
+  //   type: String,
+  //   trim: true,
 
+  //   default: "",
+  // },
+  contactId: {
+    type: String,
+    trim: true,
     default: "",
   },
+  fundAccountId: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+ shiprocketEmail: {
+  type: String,
+  trim: true,
+  default: "",
+},
+shiprocketApiToken: {
+  type: String,
+  trim: true,
+  default: "",
+ 
+},
+shiprocketPassword: {
+  type: String,
+  trim: true,
+  default: "",
+},
+
   isAdmin: {
     type: Boolean,
     default: false,

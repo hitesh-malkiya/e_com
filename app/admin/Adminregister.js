@@ -4,6 +4,8 @@ import axios from "axios"
 import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import FormInput from '../components/FormInput'
+import { set } from "mongoose";
+
 
 function Adminregister() {
   const formData = useRef(null)
@@ -11,7 +13,12 @@ function Adminregister() {
   const [message, setMessage] = useState("")
   const [errors, setErrors] = useState({})
   const router = useRouter();
-  const { data: session } = useSession();
+  const [isTOken, setIsToken] = useState(false);
+  const [token, setToken] = useState("");
+  const [tokenMessage, setTokenMessage] = useState("");
+  const { data: session, status } = useSession();
+const [contactId, setContactId] = useState("");
+const [fundAccountId, setFundAccountId] = useState("");
 
   // Client-side validation
   const validateForm = (data) => {
@@ -79,8 +86,13 @@ function Adminregister() {
         password: raw('password'),
         brand: get('brand'),
         logoImg: get('logoImg'),
-        razorpayId: get('razorpayId'),
-        razorpaySecret: get('razorpaySecret'),
+        shiprocketEmail: get('shiprocketEmail'),
+        shiprocketPassword: get('shiprocketPassword'),
+        shiprocketApiToken: token,
+        contactId: contactId,
+        fundAccountId: fundAccountId,
+        // razorpayId: get('razorpayId'),
+        // razorpaySecret: get('razorpaySecret'),
         address: {
           address: get('address'),
           city: get('city'),
@@ -98,16 +110,16 @@ function Adminregister() {
       }
 
       const response = await axios.post('/api/admin', data)
-console.log(response);
+
 
       if (response?.data?.message) {
         setMessage("Admin registered successfully!")
-        console.log("Admin registered successfully!");
-       
-       
+
+
+
         // formEl.reset()
-        if(response?.data.admin.userName){
-         router.push(`/admin/${response?.data.admin.userName}`);
+        if (response?.data.admin.userName) {
+          router.push(`/admin/${response?.data.admin.userName}`);
         }
       }
     } catch (error) {
@@ -124,14 +136,74 @@ console.log(response);
     }
   }
 
-  useEffect(() => {
-    if (!session) {
-      router.push('/log-in');
+
+  const handlegetToken = async (e) => {
+
+    try {
+
+      const response = await axios.post('https://apiv2.shiprocket.in/v1/external/auth/login', {
+        email: formData.current.shiprocketEmail.value,
+        password: formData.current.shiprocketPassword.value
+      });
+
+      setToken(await response.data.token);
+
+      setIsToken(true);
+      setTokenMessage("Token fetched successfully!");
+
+
+    } catch (err) {
+
+      setTokenMessage("Failed to fetch token.");
     }
 
-    if (session?.user?.admin?.isAdmin) {
-      router.push(`/admin/${session.user.admin.userName}`);
-    }
+  }
+const handelRazorpay = async () => {
+  try {
+    const formEl = formData.current;
+  const response = await axios.post("/api/admin/razoyrpay", {
+      name: formEl.RfullName.value,
+      email: formEl.Remail.value,
+      contact: formEl.Rcontact.value, 
+      reference_id: formEl.reference_id.value,
+      ifsc: formEl.ifsc.value,
+      account_number: formEl.account_number.value
+    });
+ 
+console.log(response.data);
+
+setFundAccountId(response.data.fund_account.id);
+setContactId(response.data.fund_account.contact_id);
+
+
+
+
+
+
+  }  catch (err) {
+
+    setTokenMessage("Failed to fetch token.");
+  }
+}
+
+
+
+  useEffect(() => {
+    const checkSession = async () => {
+
+      if (status === "unauthenticated") {
+
+
+        router.push('/log-in');
+        return;
+      }
+
+      if (session?.user?.admin?.isAdmin) {
+        router.push(`/admin/${session.user.admin.userName}`);
+      }
+    };
+
+    checkSession();
   }, [session, router]);
 
 
@@ -140,6 +212,10 @@ console.log(response);
       <h3 className="text-2xl font-semibold text-[var(--text-color)] mb-6">
         Register New Admin
       </h3>
+
+
+
+
 
       <form ref={formData} onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -188,7 +264,7 @@ console.log(response);
             type="url"
             placeholder="Enter logo image URL"
           />
-
+          {/* 
           <FormInput
             label="Razorpay ID (Optional)"
             name="razorpayId"
@@ -200,7 +276,86 @@ console.log(response);
             name="razorpaySecret"
             type="text"
             placeholder="Enter Razorpay Secret"
-          />
+          /> */}
+        </div>
+
+
+        <div className="border-t pt-6">
+          <h4 className="text-lg font-medium text-[var(--text-color)] mb-4">
+            razorpay Details
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormInput
+              label=" Name as par your bank account"
+              name="RfullName"
+              placeholder="Enter full name"
+              required
+              error={errors.fullName}
+            />
+
+            <FormInput
+              label="adhrar number"
+              name="reference_id"
+              placeholder="Enter adhar number"
+              required
+              type="number"
+              error={errors.userName}
+            />
+
+            <FormInput
+              label="permenet Email"
+              name="Remail"
+              type="email"
+              placeholder="Enter email permenet "
+              required
+              error={errors.email}
+            />
+            <FormInput
+              label={"contact number"}
+              name={"Rcontact"}
+              type={"number"}
+              placeholder={"Enter contact number"}
+              required />
+            <FormInput
+              label="IFSC Code"
+              name="ifsc"
+              placeholder="Enter IFSC code"
+              required
+              error={errors.password}
+            />  
+            <FormInput
+              label="Account Number"
+              name="account_number"   
+              type="number"
+              placeholder="Enter Account Number"
+              required
+              error={errors.password}
+            />
+     <button   type="button" onClick={handelRazorpay} className="px-2 py-1 bg-blue-500 text-white rounded text-xs mr-1" >
+                    Create razorpay account
+                  </button>
+          </div>
+        </div>
+
+
+
+
+
+        <div className="border-t pt-6">
+          <h4 className="text-lg font-medium text-[var(--text-color)] mb-4">
+            Shiprocket Details
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          </div>
+          <FormInput label="Shiprocket Email" name="shiprocketEmail" type="email" placeholder="Enter Shiprocket Email" />
+          <FormInput label="Shiprocketp password" name={"shiprocketPassword"} type="text" placeholder="Enter Shiprocket password" />
+          <p>{tokenMessage}</p>
+        </div>
+        <div onClick={handlegetToken} className="flex justify-end">
+          <button type="button" disabled={loading} className="mt-4">
+            {loading ? 'geting token...' : 'get token'}
+          </button>
         </div>
 
         {/* Address Section */}
@@ -287,6 +442,7 @@ console.log(response);
           </button>
         </div>
       </form>
+
     </div>
   )
 }

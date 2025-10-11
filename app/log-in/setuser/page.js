@@ -18,7 +18,7 @@ function Page() {
 
 
 
-console.log(session);
+
 
 
 useEffect(() => {

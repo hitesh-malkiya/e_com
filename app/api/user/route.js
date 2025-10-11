@@ -4,11 +4,11 @@ import User from '@/modules/user'
 import connectDB from '@/lib/mongoose';
 
 export async function POST(request) {
- 
+
 
   try {
     const body = await request.json()
-  
+
 
     const { email, name, image } = body
 
@@ -79,15 +79,17 @@ export async function POST(request) {
 
 export async function GET(request) {
   try {
-    const userName = request.headers.get('x-username') || request.headers.get('username')
+    const { searchParams } = new URL(request.url)
+    const userName = searchParams.get("userName")
 
-    if (!userName) {
-      return NextResponse.json(
-        { message: 'userName is required in headers (x-username or username)' },
-        { status: 400 }
-      )
+    
+    if(!userName){
+      return NextResponse.json({message: "user not found"})
     }
 
+
+
+ 
     await connectDB();
     const user = await User.findOne({ userName })
 
@@ -98,8 +100,45 @@ export async function GET(request) {
       )
     }
 
-    return NextResponse.json({ products: user.adtocard })
+
+    return NextResponse.json({ user: user })
   } catch (error) {
+      console.log(error);
+    return NextResponse.json(
+       { message: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+
+export async function PUT(request) {
+
+  try {
+    const { userName , id } = await request.json()
+    if (!userName) {
+      return NextResponse.json(
+        { message: 'userName is required in body' },
+        { status: 200 }
+      )
+    }
+    await connectDB();
+    const user = await User.findOne({ userName })
+
+    if (!user) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    } 
+    user.oder.push(id);
+console.log(user);
+
+    // Save the updated user
+    await user.save();
+    return NextResponse.json({ message: 'order id addd', products: user.oder })
+  }catch (error) {
+    console.log(error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

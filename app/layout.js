@@ -16,15 +16,15 @@ export default function RootLayout({ children }) {
         <Providers>
           <Navbar />
           <main className="">
-      
+
 
             {children}
 
           </main>
           <Footer />
         </Providers>
-        <Analytics />
-        <SpeedInsights />
+
+
       </body>
     </html>
   );

@@ -6,11 +6,6 @@ import Link from 'next/link'
 
 
 function NavbarUi({ session = false, logoSrc = '/image/profile-default.png', admin = false, user = '' }) {
-
-
-
-
-
   return (
     <section className="">
       <nav className='grid grid-cols-[1fr_1fr] items-center justify-start gap-8 fixed top-0 left-0 pl-2 pr-8 right-0 bg-[var(--bg-color)] text-[var(--text-color)] z-[100]'>
@@ -48,17 +43,17 @@ function NavbarUi({ session = false, logoSrc = '/image/profile-default.png', adm
           ) : (
             <NavLink params='/log-in'>log in</NavLink>
           )}
-
-
-
-
         </div>
       </nav>
     </section>
   )
 }
-
 export default NavbarUi
+
+
+
+
+
 
 function NavLink({ params, children }) {
   return (
@@ -70,4 +65,3 @@ function NavLink({ params, children }) {
     </Link>
   )
 }
-    

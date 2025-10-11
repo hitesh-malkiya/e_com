@@ -20,7 +20,16 @@ const orderSchema = new mongoose.Schema({
     required: [true, "Order ID is required"],
     trim: true
   },
- 
+shipment_id: {
+  type: Number,
+  trim: true,
+  default: null
+},
+shipmenOorder_id: {
+  type: Number,
+  trim: true,
+  default: null
+},
   receipt: {
     type: String,
     required: [true, "Receipt is required"],

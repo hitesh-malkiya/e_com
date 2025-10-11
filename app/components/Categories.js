@@ -19,7 +19,7 @@ async function Categories({ searchParams }) {
   try {
     const res = await getProducts(queryString);
     products = res?.data?.products || [];
-console.log(res);
+
 
 
   } catch (err) {

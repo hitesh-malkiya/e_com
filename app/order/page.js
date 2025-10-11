@@ -14,6 +14,45 @@ function Page({ searchParams }) {
   const [admin, setAdmin] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+const cities = [
+  "Ahmedabad",
+  "Surat",
+  "Vadodara",
+  "Rajkot",
+  "Bhavnagar",
+  "Jamnagar",
+  "Junagadh",
+  "Gandhinagar",
+  "Anand",
+  "Nadiad",
+  "Morbi",
+  "Surendranagar",
+  "Bharuch",
+  "Valsad",
+  "Palanpur",
+  "Vapi",
+  "Navsari",
+  "Porbandar",
+  "Godhra",
+  "Mehsana",
+  "Amreli",
+  "Patan",
+  "Botad",
+  "Veraval",
+  "Gondal",
+  "Bhuj",
+  "Dwarka",
+  "Gandhidham",
+  "Kalol",
+  "Mahesana",   // Mehsana spelled again for safety
+  "Jetpur Navagadh",
+  "Deesa",
+  "Mahuva",
+  "Modasa"
+];
+
+
+  const states = ["Gujarat"];
 
   const { data: session } = useSession()
 
@@ -26,7 +65,7 @@ function Page({ searchParams }) {
 
       const price = res?.data?.products?.[0]?.price;
       const adminData = res?.data?.products?.[0]?.admin;
-      console.log(adminData);
+
 
       setAdmin(adminData);
       return price;
@@ -49,6 +88,8 @@ function Page({ searchParams }) {
     if (orderId) {
       const fetchAmount = async () => {
         const amount = await dataGet(orderId);
+
+
         setPayAmount(amount);
       };
       fetchAmount();
@@ -87,6 +128,7 @@ function Page({ searchParams }) {
       const postalCode = orderFormData.current.postalCode.value
       const phone = orderFormData.current.phone.value
 
+
       const amount = Math.max(1, Math.round((Number(payAmount) || 0) * quantity)); // in rupees, min ₹1
       const response = await axios.post('/api/payment', {
         admin,
@@ -102,16 +144,39 @@ function Page({ searchParams }) {
         state,
         postalCode,
         phone,
+
       });
 
-      orderFormData.current.reset();
-      console.log(response)
+      console.log({ response: response.data.order.id });
+
+ const orderPost = await axios.post('/api/orderPost', {
+            userName: admin,
+            orderId: response.data.order.id,
+            landmark: orderFormData.current.landmark.value || ""
+          });
+
+ 
+      if(!orderPost.data.success){
+alert(" address not saved ")
+        return ;
+      }
       const ok = await loadRazorpayScript();
       if (!ok) throw new Error("Razorpay SDK failed to load");
-
       const { data } = response
+      console.log("aaa thi salo");
+      const userOrder = await axios.put('/api/user', {
+        userName: session?.user?.userName,
+        id: data.order.id
+      })
+      const userOrderData = await userOrder.data;
+      console.log({ userOrderData });
+
+
+
+
+
       const opstion = {
-        key: data.key,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_RGXGHBZNzDL0AE",
         order_id: data.order.id,
         theme: { color: "#111111" },
         amount: amount,
@@ -128,35 +193,46 @@ function Page({ searchParams }) {
           phone: phone
         },
         handler: async function (response) {
-          console.log("Payment Success Response:", response);
+
+
+
+
           response.admin = admin;
+          response.orderId = data.order.id;
           // Step 3: Verify payment
+
           const verifyRes = await fetch(`api/payment-verify`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(response)
           });
           const verifyData = await verifyRes.json();
-
-          console.log(verifyData);
-
           alert(verifyData.message);
 
 
 
-          try {
-            const response = await axios.put(`/api/payment`, { id: data.order.id });
-            console.log(response);
+          const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = await response;
+          const res = await fetch("/api/tr", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ razorpay_payment_id, razorpay_order_id, razorpay_signature, admin })
+          });
+          const result = await res.json();
+          console.log({ result });
 
-          } catch (error) {
-            console.log(error);
 
-          }
+          const orderPost = await axios.post('/api/orderPost', {
+            userName: admin,
+            orderId: data.order.id,
+            landmark: orderFormData.current.landmark.value || ""
+          });
+          console.log({ orderPost: orderPost.data });
 
           if (typeof window !== 'undefined') {
             localStorage.removeItem('productId');
+            router.push('/user');
           }
-          // router.push('/user');
+
         },
         modal: {
           ondismiss: function () {
@@ -165,15 +241,20 @@ function Page({ searchParams }) {
         }
       };
 
+
+
+
       var rzp1 = new Razorpay(opstion);
       rzp1.open();
-      console.log(rzp1);
+
+
 
 
     } catch (err) {
-      setError(err?.message || 'Payment failed. Please try again.');
+      setError(err?.message || 'Payment failed. Please try again.')
     } finally {
-      setIsLoading(false);
+orderFormData.current.reset();
+      setIsLoading(false)
     }
   }
 
@@ -187,44 +268,157 @@ function Page({ searchParams }) {
   }
 
   return (
-    <form ref={orderFormData} onSubmit={(e) => handelOrderForm(e)} method="POST" action="/api/payment" className="space-y-8">
+    <form
+      ref={orderFormData}
+      onSubmit={(e) => handelOrderForm(e)}
+      method="POST"
+      action="/api/payment"
+      className="max-w-4xl mx-auto mt-20 px-4"
+    >
+      {/* Card Container */}
+      <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 md:p-12 relative overflow-hidden">
 
-      <div className="bg-white rounded-xl p-6 shadow-lg mt-24 ">
-        <h2 className="text-2xl font-bold text-[var(--text-color)] mb-6">Shipping Details</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input data={"Full Name"} type={'text'} names={'fullName'} />
-          <Input data={"Phone"} type={'tel'} names={'phone'} />
-          <Input data={'City'} type={'text'} names={'city'} />
-          <Input data={'State'} type={'text'} names={'state'} />
-          <Input data={'Pin Code'} type={'number'} names={'postalCode'} />
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center space-x-4 text-sm font-medium">
+            <span className="flex items-center text-[var(--accent-color)]">
+              <span className="w-6 h-6 flex items-center justify-center rounded-full bg-[var(--accent-color)] text-white mr-2">1</span>
+              Shipping
+            </span>
+            <span className="text-gray-400">───</span>
+            <span className="flex items-center text-gray-400">
+              <span className="w-6 h-6 flex items-center justify-center rounded-full border mr-2">2</span>
+              Payment
+            </span>
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+            Shipping Information
+          </h2>
+          <p className="mt-2 text-gray-500 text-sm md:text-base">
+            Please provide accurate details so we can deliver your order smoothly.
+          </p>
+        </div>
+
+        {/* Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Input data={"Full Name"} type="text" names={"fullName"} />
+          <Input data={"Phone"} type="tel" names={"phone"} />
+
+        
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
+            <select
+              name="city"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm 
+               focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] 
+               focus:border-transparent transition duration-200"
+              required
+            >
+              <option value="">Select your city</option>
+              {cities.map((city) => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
+
+   
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">State</label>
+            <select
+              name="state"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm 
+               focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] 
+               focus:border-transparent transition duration-200"
+              required
+            >
+              <option value="">Select your state</option>
+              {states.map((state) => (
+                <option key={state} value={state}>{state}</option>
+              ))}
+            </select>
+          </div>
+
+          <Input data={"Pin Code"} type="number" names={"postalCode"} />
+  <Input data={"Landmark (opstinal)"} type="text" names={"landmark"} />
+          {/* Address */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold mb-2">Address</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Address
+            </label>
             <textarea
               name="address"
-              placeholder="Your Address"
-              className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200 "
+              placeholder="House No, Street, Landmark, Area"
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm 
+                     focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] 
+                     focus:border-transparent transition duration-200 
+                     placeholder-gray-400 resize-none"
               required
-              rows={3}
             />
           </div>
         </div>
+
+        {/* Error Message */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {error}
+          <div className="mt-8 bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-sm shadow-sm">
+            ⚠️ {error}
           </div>
         )}
-        <div className="flex items-center gap-10 mt-6 mb-5">
-          <div className="text-lg font-semibold text-[var(--text-color)]">Payable Amount: ₹{payAmount || 0}</div>
+
+        {/* Payment Summary */}
+        <div className="mt-12 bg-gray-50 rounded-xl border p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-lg font-semibold text-gray-900">
+            Total Payable:{" "}
+            <span className="text-2xl font-bold text-[var(--accent-color)]">
+              ₹{payAmount || 0}
+            </span>
+          </div>
+
           <button
             type="submit"
             disabled={isLoading || !session}
-            className="px-6 py-3 bg-[var(--sec-accent-color)]  hover:bg-[var(--accent-color)] text-[var(--bg-color)] rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full md:w-auto px-10 py-4 rounded-xl font-semibold text-white 
+                   bg-gradient-to-r from-[var(--sec-accent-color)] to-[var(--accent-color)] 
+                   shadow-lg hover:scale-105 hover:shadow-xl 
+                   transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Processing...' : 'Place Order'}
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  ></path>
+                </svg>
+                Processing...
+              </span>
+            ) : (
+              "Proceed to Payment"
+            )}
           </button>
         </div>
       </div>
     </form>
+
+
   )
 }
 
@@ -233,8 +427,19 @@ export default Page
 export function Input({ data, type, names }) {
   return (
     <div>
-      <label className="block text-sm font-semibold mb-2">{data}</label>
-      <input name={names} type={type} placeholder={`Your ${data}`} className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg focus:border-transparent transition duration-200 " required />
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+        {data}
+      </label>
+      <input
+        name={names}
+        type={type}
+        placeholder={`Your ${data}`}
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm 
+                   focus:outline-none focus:ring-2 focus:ring-[var(--accent-color)] 
+                   focus:border-transparent transition duration-200 
+                   placeholder-gray-400"
+        required
+      />
     </div>
   )
 }
