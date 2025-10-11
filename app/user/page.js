@@ -40,7 +40,7 @@ export default async function Page({ searchParams, params }) {
         {/* Header */}
         <Header userName={session?.user?.name} isAdmin={session?.user?.isAdmin} />
 
-       
+       <ProductsList queryStringURL={queryString} userName={session?.user?.userName} />
         <OrderData userName={session?.user?.userName} />
       </div>
     </div>
