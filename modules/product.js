@@ -48,7 +48,11 @@ const productSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-
+  abrand: {
+    type: String,
+    trim: true,
+    default: "",
+  },
   category: {
     type: String,
     required: [true, "Product category is required"],

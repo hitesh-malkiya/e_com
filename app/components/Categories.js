@@ -16,21 +16,21 @@ async function Categories({ searchParams }) {
     "T-Shirts",
     "Formal Shirts",
     "Casual Shirts",
-    // "Jeans",
-    // "Casual pants",
-    // "Formal pants",
-    // "Track Pants",
-    // "Cargos ",
-    // "Jackets",
-    // "Blazers",
-    // "Kurtis",
-    // "Chaniya Choli",
-    // "Party Dresses",
-    // "Dresses",
-    // "Tops",
-    // "Night Dresses",
-    // "Sweaters",
-    // "Jeans",
+    "Jeans",
+    "Casual pants",
+    "Formal pants",
+    "Track Pants",
+    "Cargos ",
+    "Jackets",
+    "Blazers",
+    "Kurtis",
+    "Chaniya Choli",
+    "Party Dresses",
+    "Dresses",
+    "Tops",
+    "Night Dresses",
+    "Sweaters",
+    "Jeans",
   ];
 
   const tamp = await searchParams
@@ -38,6 +38,7 @@ async function Categories({ searchParams }) {
   let products = [];
   try {
     const res = await getProducts(queryString);
+    console.log(res);
     
     if (res.message === "error") {
       products = [];

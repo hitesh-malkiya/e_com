@@ -27,6 +27,7 @@ export async function POST(request) {
         const imageFile = formData.get('image');
         const userName = formData.get('userName')
         const admin = formData.get('admin')
+        const abrand = formData.get('abrand')
         const mrp = formData.get('mrp')
         const moreString = formData.get('more')
         const more = moreString ? JSON.parse
@@ -69,6 +70,7 @@ export async function POST(request) {
             category,
             stock,
             admin,
+            abrand,
             more,
             mainDes,
             brand
@@ -95,14 +97,14 @@ export async function DELET(params) {
 
 export async function GET(request) {
     try {
-  
-        
+
+
         await connectDB();
         // Get query parameters from URL
         const { searchParams } = new URL(request.url);
         const category = searchParams.get('category')
-           
-     
+
+
         const admin = searchParams.get('admin')
         const minPrice = searchParams.get('minPrice');
         const maxPrice = searchParams.get('maxPrice');
@@ -112,7 +114,7 @@ export async function GET(request) {
         const sortBy = searchParams.get('sortBy') || 'name';
         const sortOrder = searchParams.get('sortOrder') || 'asc';
         const id = searchParams.get('id');
-     
+
         // Build query object
         let query = {};
 
@@ -168,7 +170,7 @@ export async function GET(request) {
         });
 
     } catch (error) {
-        
+
         return NextResponse.json({ message: "error" }, error);
     }
 }

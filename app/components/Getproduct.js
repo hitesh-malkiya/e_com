@@ -11,76 +11,90 @@ function Getproduct(params) {
 
     return (
 
-        <div className="grid gap-8 grid-flow-col overflow-auto pt-9 pb-8 scroll-smooth scrollbar-none">
-            {productData.map((product) => {
-                const mrp = Number(product.mrp) || 0
-                const price = Number(product.price) || 0
-                const discountPercent = mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : 0
+       <div className="pt-9 pb-8 overflow-x-auto scrollbar-none scroll-smooth">
+      <div className="grid grid-flow-col  auto-cols-[minmax(240px,20vw)] gap-8 px-4 md:grid-rows-1">
+        {productData.map((product) => {
+          const mrp = Number(product.mrp) || 0;
+          const price = Number(product.price) || 0;
+          const discountPercent = mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : 0;
 
-                return (
-                    <div
-                        key={product._id}
-                        className="flex flex-col gap-3 w-[20vw] p-4 rounded-lg  border-[var(--accent-color)] bg-[var(--bg-color)] shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] hover:-translate-y-0.5 transition duration-300"
-                    >
-                       
-                        <div className="">
-                            <Link href={`/product/${product._id}`} className="">
-                                {product.image ? (
-                                    <Image
-                                        src={product.image}
-                                        alt={product.name || 'Product Image'}
-                                        width={500}
-                                        height={500}
-                                        className="h-48 w-full object-contain rounded-md bg-[var(--sec-bg-color)] hover:scale-[1.03] overflow-hidden transition duration-300"
-                                    />
-                                ) : 'No Image'}
-                            </Link>
-                        </div>
-                        {/* categery and admin */}
-                        <div className="flex items-center gap-2 text-xs text-[var(--text-color)]">
-                            <span className="truncate">{product.category}</span>
-                            <span className="h-1 w-1 rounded-full bg-gray-300" />
-                            <span className="truncate">{product.admin}</span>
-                        </div>
-                        {/* product name */}
-                        <Link href={`/product/${product._id}`}>
-                        <h3 className=" text-xl font-medium text[var(--text-color)] line-clamp-2 hover:text-[var(--sec-accent-color)] transition-colors">
-                            {product.name}
-                        </h3>
-                        </Link>
-                        {/* mrp */}
-                        <div className="text-xs text-gray-400">
-                            <span className="line-through">₹{mrp}</span>
-                        </div>
+          return (
+            <div
+              key={product._id}
+              className="flex flex-col gap-3 p-4 rounded-2xl bg-[var(--bg-color)] border border-[var(--accent-color)] 
+                         shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow-hover)] 
+                         hover:-translate-y-1 transition-all duration-300 ease-out"
+            >
+              {/* Product Image */}
+              <Link href={`/product/${product._id}`} className="block group relative">
+                {product.image ? (
+                  <Image
+                    src={product.image}
+                    alt={product.name || "Product Image"}
+                    width={400}
+                    height={400}
+                    className="h-56 w-full object-contain bg-[var(--sec-bg-color)] rounded-lg 
+                               transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="h-56 flex items-center justify-center text-gray-400 bg-gray-100 rounded-lg">
+                    No Image
+                  </div>
+                )}
+                {/* Discount Badge */}
+                {discountPercent > 0 && (
+                  <div className="absolute top-3 right-3 bg-[var(--accent-color)] text-white text-xs px-2 py-1 rounded-lg shadow-md">
+                    {discountPercent}% OFF
+                  </div>
+                )}
+              </Link>
 
-                        {/* price and descount */}
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-lg font-semibold text-[var(--text-color)]">₹{price}</span>
-                            <span className="text-xs font-semibold text-[var(-sec-accent-color)] bg-[var(--accent-color)] px-2 py-0.5 rounded">{discountPercent}% OFF</span>
-                        </div>
-                        <div className="mt-auto flex justify-start gap-3 items-center">
-                            {React.Children.map(children, (child) =>
-                                React.isValidElement(child)
-                                    ? React.cloneElement(
-                                        child,
-                                        child.props && child.props.productId !== undefined
-                                            ? {}
-                                            : { productId: product._id }
-                                      )
-                                    : child
-                            )}
-                        </div>
+              {/* Category & Admin */}
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <span className="truncate">{product.category}</span>
+                <span className="h-1 w-1 rounded-full bg-gray-300" />
+                <span className="truncate">{product.admin}</span>
+              </div>
 
+              {/* Product Name */}
+              <Link href={`/product/${product._id}`}>
+                <h3 className="text-lg font-semibold text-[var(--text-color)] line-clamp-2 
+                               hover:text-[var(--sec-accent-color)] transition-colors duration-200">
+                  {product.name}
+                </h3>
+              </Link>
 
+              {/* Product Description */}
+              <p className="text-sm text-gray-500 line-clamp-2">{product.mainDes}</p>
 
+              {/* MRP */}
+              <div className="text-xs text-gray-400">
+                {mrp > 0 && <span className="line-through">₹{mrp}</span>}
+              </div>
 
-                    </div>
-                )
-            })
-            }
+              {/* Price Section */}
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg font-bold text-[var(--text-color)]">₹{price}</span>
+              </div>
 
-
-        </div>
+              {/* Buttons or Children */}
+              <div className="mt-auto flex gap-3 items-center">
+                {React.Children.map(children, (child) =>
+                  React.isValidElement(child)
+                    ? React.cloneElement(
+                        child,
+                        child.props?.productId !== undefined
+                          ? {}
+                          : { productId: product._id }
+                      )
+                    : child
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
     )
 }
 

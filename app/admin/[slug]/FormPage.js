@@ -4,7 +4,7 @@
 import React, { useRef, useState } from 'react'
 import axios from 'axios'
 
-function FormPage({ slug }) {
+function FormPage({ slug, abrand }) {
 
   const categorieName = [
     "T-Shirts",
@@ -78,6 +78,7 @@ function FormPage({ slug }) {
       data.append('stock', formData.current.stock.value)
       data.append('userName', slug)
       data.append('admin', slug)
+      data.append('abrand', abrand)
       data.append('more', JSON.stringify(pairs));
       data.append('mainDes', formData.current.mainDes.value)
       data.append('brand', formData.current.brand.value)

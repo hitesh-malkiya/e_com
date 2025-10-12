@@ -20,7 +20,7 @@ export default async function Page({ searchParams, params }) {
   } catch {
     session = null;
   }
-
+  const abrand = await session.user.admin.brand
   // Check if user is authenticated
   if (!session || !session.user) {
     return (
@@ -63,6 +63,8 @@ export default async function Page({ searchParams, params }) {
   let orders = [];
   try {
     const res = await getorder(session.user.admin.userName);
+   
+    
     if(res.message === "error") {
         orders = [];
     } else {
@@ -77,7 +79,7 @@ export default async function Page({ searchParams, params }) {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <Header userName={session?.user?.name} />
-        <FormPage slug={slug} />
+        <FormPage slug={slug} abrand={abrand}/>
         <Order orders={orders} />
       </div>
     </div>

@@ -60,6 +60,7 @@ const cities = [
     try {
       const tamp = await searchParams
       const queryString = new URLSearchParams(tamp).toString();
+console.log(queryString, id, 'id');
 
       const res = await getProductsSort(queryString, id, 'id');
 
@@ -72,7 +73,7 @@ const cities = [
     } catch (err) {
       return 0;
     }
-  }, [searchParams]);
+  }, [searchParams ]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
