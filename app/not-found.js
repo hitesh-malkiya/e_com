@@ -1,4 +1,4 @@
-import { signOut } from 'next-auth/react'
+
 import Link from 'next/link'
 
 export default function NotFound() {
@@ -12,10 +12,7 @@ export default function NotFound() {
           
         </Link>
 
-         <button
-                onClick={() => signOut({ callbackUrl: '/' })}
-                className=" bg-[var(--sec-accent-color)]  hover:bg-[var(--accent-color)] text-[var(--bg-color)] font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center"
-              ></button>
+        
       </div>
     </div>
   )

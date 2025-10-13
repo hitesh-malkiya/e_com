@@ -5,7 +5,7 @@ import React from 'react'
 
 export default function Error() {
   return (
-   <div className=' mt-14 min-h-11'>
+   <div className=' mt-24 min-h-11'>
     
     
      <button
