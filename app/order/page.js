@@ -6,6 +6,8 @@ import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation';
 import Loading from '../loading'
 
+
+
 function Page({ searchParams }) {
   const router = useRouter();
   const orderFormData = useRef(null)
@@ -14,42 +16,54 @@ function Page({ searchParams }) {
   const [admin, setAdmin] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-const cities = [
-  "Ahmedabad",
-  "Surat",
-  "Vadodara",
-  "Rajkot",
-  "Bhavnagar",
-  "Jamnagar",
-  "Junagadh",
-  "Gandhinagar",
-  "Anand",
-  "Nadiad",
-  "Morbi",
-  "Surendranagar",
-  "Bharuch",
-  "Valsad",
-  "Palanpur",
-  "Vapi",
-  "Navsari",
-  "Porbandar",
-  "Godhra",
-  "Mehsana",
-  "Amreli",
-  "Patan",
-  "Botad",
-  "Veraval",
-  "Gondal",
-  "Bhuj",
-  "Dwarka",
-  "Gandhidham",
-  "Kalol",
-  "Mahesana",   // Mehsana spelled again for safety
-  "Jetpur Navagadh",
-  "Deesa",
-  "Mahuva",
-  "Modasa"
-];
+  const cities = [
+    "Ahmedabad",
+    "Surat",
+    "Vadodara",
+    "Rajkot",
+    "Bhavnagar",
+    "Jamnagar",
+    "Junagadh",
+    "Gandhinagar",
+    "Anand",
+    "Nadiad",
+    "Morbi",
+    "Surendranagar",
+    "Bharuch",
+    "Valsad",
+    "Palanpur",
+    "Vapi",
+    "Navsari",
+    "Porbandar",
+    "Godhra",
+    "Mehsana",
+    "Amreli",
+    "Patan",
+    "Botad",
+    "Veraval",
+    "Gondal",
+    "Bhuj",
+    "Dwarka",
+    "Gandhidham",
+    "Kalol",
+    "Mahesana",   // Mehsana spelled again for safety
+    "Jetpur Navagadh",
+    "Deesa",
+    "Mahuva",
+    "Modasa"
+  ];
+  const [stock, setStock] = useState(0);
+  const [qty, setQty] = useState(1);
+  useEffect(() => {
+
+    if (stock !== 0) {
+      if (qty > stock) setQty(product.stock);
+      
+      if (qty < 1) setQty(1);
+    } 
+
+
+  }, [qty, stock]);
 
 
   const states = ["Gujarat"];
@@ -60,20 +74,20 @@ const cities = [
     try {
       const tamp = await searchParams
       const queryString = new URLSearchParams(tamp).toString();
-console.log(queryString, id, 'id');
+      console.log(queryString, id, 'id');
 
       const res = await getProductsSort(queryString, id, 'id');
 
       const price = res?.data?.products?.[0]?.price;
       const adminData = res?.data?.products?.[0]?.admin;
-
+      setStock(res?.data?.products?.[0]?.stock || 0);
 
       setAdmin(adminData);
       return price;
     } catch (err) {
       return 0;
     }
-  }, [searchParams ]);
+  }, [searchParams]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -121,7 +135,7 @@ console.log(queryString, id, 'id');
       const user = session?.user?.name
       const userName = session?.user?.userName
       const email = session?.user?.email
-      const quantity = 1
+
       const fullName = orderFormData.current.fullName.value
       const address = orderFormData.current.address.value || ""
       const city = orderFormData.current.city.value
@@ -130,12 +144,12 @@ console.log(queryString, id, 'id');
       const phone = orderFormData.current.phone.value
 
 
-      const amount = Math.max(1, Math.round((Number(payAmount) || 0) * quantity)); // in rupees, min ₹1
+      const amount = Math.max(1, Math.round((Number(payAmount) || 0) * qty)); // in rupees, min ₹1
       const response = await axios.post('/api/payment', {
         admin,
         user,
         orderId,
-        quantity,
+        quantity: qty,
         userName,
         email,
         payAmount: amount,
@@ -148,28 +162,22 @@ console.log(queryString, id, 'id');
 
       });
 
-     
- const orderPost = await axios.post('/api/orderPost', {
-            userName: admin,
-            orderId: response.data.order.id,
-            landmark: orderFormData.current.landmark.value || ""
-          });
 
  
-      if(!orderPost.data.success){
-alert(" address not saved ")
-        return ;
-      }
+      
+
       const ok = await loadRazorpayScript();
       if (!ok) throw new Error("Razorpay SDK failed to load");
+
+
+
       const { data } = response
-      ("aaa thi salo");
       const userOrder = await axios.put('/api/user', {
         userName: session?.user?.userName,
         id: data.order.id
       })
       const userOrderData = await userOrder.data;
-     
+
 
 
 
@@ -225,6 +233,13 @@ alert(" address not saved ")
             orderId: data.order.id,
             landmark: orderFormData.current.landmark.value || ""
           });
+      
+
+
+      if (!orderPost.data.success) {
+        alert(" address not saved ")
+        return;
+      }
 
           if (typeof window !== 'undefined') {
             localStorage.removeItem('productId');
@@ -251,7 +266,7 @@ alert(" address not saved ")
     } catch (err) {
       setError(err?.message || 'Payment failed. Please try again.')
     } finally {
-orderFormData.current.reset();
+      orderFormData.current.reset();
       setIsLoading(false)
     }
   }
@@ -306,7 +321,7 @@ orderFormData.current.reset();
           <Input data={"Full Name"} type="text" names={"fullName"} />
           <Input data={"Phone"} type="tel" names={"phone"} />
 
-        
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
             <select
@@ -323,7 +338,7 @@ orderFormData.current.reset();
             </select>
           </div>
 
-   
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">State</label>
             <select
@@ -341,7 +356,7 @@ orderFormData.current.reset();
           </div>
 
           <Input data={"Pin Code"} type="number" names={"postalCode"} />
-  <Input data={"Landmark (opstinal)"} type="text" names={"landmark"} />
+          <Input data={"Landmark (opstinal)"} type="text" names={"landmark"} />
           {/* Address */}
           <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -372,10 +387,28 @@ orderFormData.current.reset();
           <div className="text-lg font-semibold text-gray-900">
             Total Payable:{" "}
             <span className="text-2xl font-bold text-[var(--accent-color)]">
-              ₹{payAmount || 0}
+              ₹{ qty==0 ? payAmount || 0 : payAmount* qty }
             </span>
           </div>
-
+          <div className="flex items-center border rounded-lg overflow-hidden">
+            <button
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              className="px-3 py-2 text-lg"
+              aria-label="Decrease quantity"
+              type='button'
+            >
+              −
+            </button>
+            <div className="px-4 py-2 font-medium min-w-[3rem] text-center">{qty}</div>
+            <button
+              onClick={() => setQty((q) => Math.min(stock || 99, q + 1))}
+              className="px-3 py-2 text-lg"
+              aria-label="Increase quantity"
+              type='button'
+            >
+              +
+            </button>
+          </div>
           <button
             type="submit"
             disabled={isLoading || !session}

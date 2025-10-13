@@ -1,11 +1,13 @@
 
-import Categories from '@/app/components/Categories';
+
 
 import NotFound from '@/app/not-found';
 import { getProductsSort } from '@/lib/Getproduct';
 
 import React from 'react';
 import ProductDetailClient from './ProductDetailClient';
+import Categorie from '@/app/components/Categorie';
+
 
 export default async function Page({ searchParams = {}, params = {} }) {
 
@@ -33,7 +35,7 @@ const queryString = new URLSearchParams(tamp).toString();
       ))}
 
       {/* Related category / suggestions — reused component */}
-      <Categories
+      <Categorie
         categorieName={productsData[0]?.category}
         searchParams={searchParams}
       />

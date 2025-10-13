@@ -1,82 +1,85 @@
 "use client";
 import React, { useMemo } from "react";
+import { AddToCartButton } from "../components/AddToCartButton";
+import { Buybtn } from "../components/Buybtn";
 
-export default function OrderCard({orderData , productData, trackingRaw}) {
-
-
-
-/* Choose which example to show by default (replace with actual fetch result) */
-
-
-/* ----------------------- Utility & normalization logic ----------------------- */
-
-/** Steps for the progress bar in order */
-const STEPS = [
-  { key: "PUD", label: "Picked Up" },
-  { key: "PKD", label: "Shipped" },
-  { key: "IT", label: "In Transit" },
-  { key: "OFD", label: "Out for Delivery" },
-  { key: "DLVD", label: "Delivered" },
-];
-
-/** Normalize tracking raw payload into { activities: [], awb, courier, etd } */
-function normalizeTracking(raw) {
-
-  if (!raw) return { activities: [], awb: null, courier: null, etd: null, error: null };
-
-  // case when object has a numeric key like "993975537": { tracking_data: { ... } }
-  const firstKey = Object.keys(raw)[0];
-  let tracking_data = null;
-
-  if (raw.tracking_data) {
-    tracking_data = raw.tracking_data;
+export default function OrderCard({ orderData, productData, trackingRaw }) {
+  console.log({ orderData, productData, trackingRaw });
 
 
-  } else if (raw[firstKey] && raw[firstKey].tracking_data) {
-    tracking_data = raw[firstKey].tracking_data;
+
+  /* Choose which example to show by default (replace with actual fetch result) */
+
+
+  /* ----------------------- Utility & normalization logic ----------------------- */
+
+  /** Steps for the progress bar in order */
+  const STEPS = [
+    { key: "PUD", label: "Picked Up" },
+    { key: "PKD", label: "Shipped" },
+    { key: "IT", label: "In Transit" },
+    { key: "OFD", label: "Out for Delivery" },
+    { key: "DLVD", label: "Delivered" },
+  ];
+
+  /** Normalize tracking raw payload into { activities: [], awb, courier, etd } */
+  function normalizeTracking(raw) {
+
+    if (!raw) return { activities: [], awb: null, courier: null, etd: null, error: null };
+
+    // case when object has a numeric key like "993975537": { tracking_data: { ... } }
+    const firstKey = Object.keys(raw)[0];
+    let tracking_data = null;
+
+    if (raw.tracking_data) {
+      tracking_data = raw.tracking_data;
+
+
+    } else if (raw[firstKey] && raw[firstKey].tracking_data) {
+      tracking_data = raw[firstKey].tracking_data;
+    }
+
+    if (!tracking_data) {
+      return { activities: [], awb: null, courier: null, etd: null, error: "No tracking data" };
+    }
+
+    const activities = Array.isArray(tracking_data.shipment_track_activities)
+      ? // Normalize date and sort descending (latest first)
+      tracking_data.shipment_track_activities
+        .map((a) => ({ ...a, ts: a.date ? new Date(a.date).getTime() : 0 }))
+        .sort((a, b) => b.ts - a.ts)
+      : [];
+
+
+    const awb = Array.isArray(tracking_data.shipment_track) && tracking_data.shipment_track[0]?.awb_code
+      ? tracking_data.shipment_track[0].awb_code
+      : null;
+
+    const courier = Array.isArray(tracking_data.shipment_track) && tracking_data.shipment_track[0]?.courier_name
+      ? tracking_data.shipment_track[0].courier_name
+      : null;
+
+    const etd = tracking_data.etd || null;
+    const error = tracking_data.error || null;
+
+    return { activities, awb, courier, etd, error };
   }
 
-  if (!tracking_data) {
-    return { activities: [], awb: null, courier: null, etd: null, error: "No tracking data" };
+  /** Map a tracking step code/label to step index (0..4) */
+  function mapStatusToStepIndex(statusOrLabel) {
+    if (!statusOrLabel) return 0;
+    const s = String(statusOrLabel).toUpperCase();
+
+    if (["DLVD", "DELIVERED"].some((v) => s.includes(v))) return 4;
+    if (["OFD", "OUT FOR DELIVERY"].some((v) => s.includes(v))) return 3;
+    if (["IT", "IN TRANSIT"].some((v) => s.includes(v))) return 2;
+    if (["PKD", "SHIPPED"].some((v) => s.includes(v))) return 1;
+    if (["PUD", "PICKED", "PICKED UP", "PICKDONE"].some((v) => s.includes(v))) return 0;
+
+    return 0;
   }
 
-  const activities = Array.isArray(tracking_data.shipment_track_activities)
-    ? // Normalize date and sort descending (latest first)
-    tracking_data.shipment_track_activities
-      .map((a) => ({ ...a, ts: a.date ? new Date(a.date).getTime() : 0 }))
-      .sort((a, b) => b.ts - a.ts)
-    : [];
-
-
-  const awb = Array.isArray(tracking_data.shipment_track) && tracking_data.shipment_track[0]?.awb_code
-    ? tracking_data.shipment_track[0].awb_code
-    : null;
-
-  const courier = Array.isArray(tracking_data.shipment_track) && tracking_data.shipment_track[0]?.courier_name
-    ? tracking_data.shipment_track[0].courier_name
-    : null;
-
-  const etd = tracking_data.etd || null;
-  const error = tracking_data.error || null;
-
-  return { activities, awb, courier, etd, error };
-}
-
-/** Map a tracking step code/label to step index (0..4) */
-function mapStatusToStepIndex(statusOrLabel) {
-  if (!statusOrLabel) return 0;
-  const s = String(statusOrLabel).toUpperCase();
-
-  if (["DLVD", "DELIVERED"].some((v) => s.includes(v))) return 4;
-  if (["OFD", "OUT FOR DELIVERY"].some((v) => s.includes(v))) return 3;
-  if (["IT", "IN TRANSIT"].some((v) => s.includes(v))) return 2;
-  if (["PKD", "SHIPPED"].some((v) => s.includes(v))) return 1;
-  if (["PUD", "PICKED", "PICKED UP", "PICKDONE"].some((v) => s.includes(v))) return 0;
-
-  return 0;
-}
-
-/* ------------------------------ React component ------------------------------ */
+  /* ------------------------------ React component ------------------------------ */
 
 
 
@@ -88,6 +91,7 @@ function mapStatusToStepIndex(statusOrLabel) {
   // compute latest step index
   const latestActivity = activities.length ? activities[0] : null;
   const latestIndex = latestActivity ? mapStatusToStepIndex(latestActivity.status || latestActivity["sr-status-label"] || latestActivity.activity) : 0;
+  console.log(productData);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 flex justify-center">
@@ -110,9 +114,9 @@ function mapStatusToStepIndex(statusOrLabel) {
                   : "bg-yellow-100 text-yellow-800"
                   }`}
               >
-                {orderData.paymentStatus?.toUpperCase() || "PENDING"}
+                {orderData.orderStatus?.toUpperCase() || "PENDING"}
               </div>
-              <div className="text-sm text-gray-500 mt-1">Status: {orderData.orderStatus}</div>
+
             </div>
             <div className="text-sm text-gray-500">
               <div>Receipt: <span className="font-mono">{orderData.receipt}</span></div>
@@ -143,12 +147,11 @@ function mapStatusToStepIndex(statusOrLabel) {
                 </div>
 
                 <div className="mt-6 flex items-center gap-3">
-                  <button className="px-3 py-2 rounded-lg bg-purple-600 text-white text-sm shadow">
-                    Buy Again
-                  </button>
-                  <button className="px-3 py-2 rounded-lg border text-sm" onClick={() => navigator.clipboard?.writeText(productData.image)}>
-                    Copy Image URL
-                  </button>
+                 
+                    <AddToCartButton productId={productData._id} />
+                    <Buybtn productId={productData._id} />
+             
+
                 </div>
               </div>
             </div>
@@ -184,8 +187,13 @@ function mapStatusToStepIndex(statusOrLabel) {
               </div>
             </div>
 
-            <div className="border-t pt-4">
-              <h3 className="text-sm text-gray-500">Payment</h3>
+            <div className="pt-4">
+              <h3 className="text-sm text-gray-500">Payment  Status: 
+                <span className={` text-center text-gray-500 px-3 pb-1 rounded-full font-semibold text-sm ${orderData.paymentStatus === "success"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-yellow-100 text-yellow-800"
+                }`}>  {orderData.paymentStatus}</span></h3>
+
               <div className="mt-2 text-sm">
                 <div><span className="font-semibold">Method:</span> {orderData.paymentMethod}</div>
                 <div className="mt-2 font-bold text-gray-800">Paid: ₹{orderData.payAmount}</div>

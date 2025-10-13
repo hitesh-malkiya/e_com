@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { Button } from "./Botton";
 
 export default function HomeHero() {
   const heroRef = useRef(null);
@@ -31,24 +32,22 @@ export default function HomeHero() {
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl px-4">
-        <h1 className="hero-title text-5xl md:text-7xl font-bold text-gray-900 leading-tight">
-          <span>Threads of India.</span>{" "}
-          <span className="text-[#c79b63]">Woven by Gujarat.</span>{" "}
-          <span>Styled for the World.</span>
+        <h1 className="hero-title text-5xl md:text-5xl font-bold text-gray-900 leading-tight">
+          <span>Built in Gujarat.</span>{" "}
+          <span className="text-[var(--accent-color)]">Driven by People.</span>{" "}
+          <span>Empowering Every Dream.</span>
         </h1>
 
-        <p className="hero-sub mt-6 text-lg md:text-xl text-gray-700 font-light">
-          Born from the hands of real cloth makers — GETCLOTH stands for every
-          Indian artisan, every dreamer, and every brand ready to rise.
+        <p className="hero-sub mt-6 text-lg md:text-lg text-gray-700 font-light">
+          {" Where tradition meets innovation — GETCLOTH connects Gujarat’s creators and customers on one digital platform. A homegrown revolution bringing authentic Indian products and proud local stories to the modern world."}
         </p>
 
         <div className="hero-btns mt-10 flex gap-6 justify-center">
-          <button className="bg-gray-900 text-white px-8 py-3 rounded-full hover:bg-gray-800 transition">
-            Shop Now
-          </button>
-          <button className="border border-gray-800 px-8 py-3 rounded-full hover:bg-gray-800 hover:text-white transition">
-            Register Your Brand
-          </button>
+
+          <Button data="Explore Products" link="/products" />
+
+          <Button data=" Register Your Brand" link="/admin" />
+
         </div>
       </div>
     </section>

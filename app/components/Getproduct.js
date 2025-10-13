@@ -5,13 +5,13 @@ import React from 'react'
 function Getproduct(params) {
 
 
-    const { productData = [], children } = params
+  const { productData = [], children } = params
 
 
 
-    return (
+  return (
 
-       <div className="pt-9 pb-8 overflow-x-auto scrollbar-none scroll-smooth">
+    <div className="pt-9 pb-8 overflow-x-auto scrollbar-none scroll-smooth">
       <div className="grid grid-flow-col  auto-cols-[minmax(240px,20vw)] gap-8 px-4 md:grid-rows-1">
         {productData.map((product) => {
           const mrp = Number(product.mrp) || 0;
@@ -43,17 +43,17 @@ function Getproduct(params) {
                 )}
                 {/* Discount Badge */}
                 {discountPercent > 0 && (
-                  <div className="absolute top-3 right-3 bg-[var(--accent-color)] text-white text-xs px-2 py-1 rounded-lg shadow-md">
+                  <div className="absolute top-3 right-3 bg-[var(--accent-color)] text-black text-xs px-2 py-1 rounded-lg shadow-md">
                     {discountPercent}% OFF
                   </div>
                 )}
               </Link>
 
               {/* Category & Admin */}
-              <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center gap-2 text-[18px] text-gray-500">
                 <span className="truncate">{product.category}</span>
                 <span className="h-1 w-1 rounded-full bg-gray-300" />
-                <span className="truncate">{product.admin}</span>
+               <Link href={product.abrand} > <span className="truncate hover:text-[var(--sec-accent-color)] ">{product.abrand}</span></Link>
               </div>
 
               {/* Product Name */}
@@ -67,26 +67,30 @@ function Getproduct(params) {
               {/* Product Description */}
               <p className="text-sm text-gray-500 line-clamp-2">{product.mainDes}</p>
 
-              {/* MRP */}
-              <div className="text-xs text-gray-400">
-                {mrp > 0 && <span className="line-through">₹{mrp}</span>}
-              </div>
 
-              {/* Price Section */}
-              <div className="flex items-baseline gap-2">
-                <span className="text-lg font-bold text-[var(--text-color)]">₹{price}</span>
-              </div>
 
+
+              <div className="text-start mt-4 space-y-2 flex gap-2 items-center">
+                {mrp > 0 && (
+                  <span className="text-sm text-gray-400 line-through">{mrp}</span>
+                )}
+                <span className="text-xl md:text-2xl font-bold">{price}</span>
+                {discountPercent > 0 && (
+                  <span className=" bg-[var(--accent-color)] text-black text-xs px-2 py-1 rounded-lg shadow-md">
+                    {discountPercent}% OFF
+                  </span>
+                )}
+              </div>
               {/* Buttons or Children */}
               <div className="mt-auto flex gap-3 items-center">
                 {React.Children.map(children, (child) =>
                   React.isValidElement(child)
                     ? React.cloneElement(
-                        child,
-                        child.props?.productId !== undefined
-                          ? {}
-                          : { productId: product._id }
-                      )
+                      child,
+                      child.props?.productId !== undefined
+                        ? {}
+                        : { productId: product._id }
+                    )
                     : child
                 )}
               </div>
@@ -95,7 +99,7 @@ function Getproduct(params) {
         })}
       </div>
     </div>
-    )
+  )
 }
 
 export default Getproduct

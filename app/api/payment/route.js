@@ -38,18 +38,20 @@ export async function POST(req) {
       return NextResponse.json({ error: "Razorpay keys missing" }, { status: 200 });
     }
 
+
+    let total_amount = payAmount * 100;
     const razorpay = new Razorpay({ key_id, key_secret });
 
     // Create Razorpay order
     const orderPayload = {
-      amount: Math.round(payAmount * 100), // paise
+      amount: Math.round(total_amount), // paise
       currency: "INR",
       receipt: receiptNo
     };
-    console.log(orderPayload);
+
 
     const razorpayOrder = await razorpay.orders.create(orderPayload);
-    console.log(razorpayOrder);
+
 
 
 
@@ -117,7 +119,7 @@ export async function GET(params) {
     }
     return NextResponse.json({ data })
   } catch (err) {
-    console.log(err);
+
     return NextResponse.json({ message: "error" })
 
   }

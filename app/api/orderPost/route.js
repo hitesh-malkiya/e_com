@@ -40,7 +40,7 @@ export async function POST(req) {
 
         let lastName;
         let firstName;
-        console.log("heiuweuyvtt", order);
+
 
         if (order.user) {
             const full = order.user.trim();
@@ -106,7 +106,7 @@ export async function POST(req) {
         return NextResponse.json({ success: true, order: orderRes.data }, { status: 200 });
 
     } catch (error) {
-        console.log("Error creating Shiprocket order:", error.response?.data || error.message, error);
+       
         return NextResponse.json({ success: false, error: error.response?.data || error.message }, { status: 200 });
     }
 }

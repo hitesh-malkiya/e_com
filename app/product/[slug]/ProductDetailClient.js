@@ -11,11 +11,11 @@ export default function ProductDetailClient({ product }) {
   const images = Array.isArray(product.images) && product.images.length
     ? product.images
     : product.image
-    ? [product.image]
-    : ["https://via.placeholder.com/800x800?text=No+Image"];
+      ? [product.image]
+      : ["https://via.placeholder.com/800x800?text=No+Image"];
 
   const [mainIndex, setMainIndex] = useState(0);
-  const [qty, setQty] = useState(1);
+
   const [shareUrl, setShareUrl] = useState("");
   const [showModal, setShowModal] = useState(false);
 
@@ -23,14 +23,6 @@ export default function ProductDetailClient({ product }) {
     // set share url on client
     if (typeof window !== "undefined") setShareUrl(window.location.href);
   }, []);
-
-  useEffect(() => {
-    // keep qty in valid range
-    if (product?.stock != null) {
-      if (qty > product.stock) setQty(product.stock);
-      if (qty < 1) setQty(1);
-    }
-  }, [qty, product?.stock]);
 
   const mrp = Number(product.mrp) || 0;
   const price = Number(product.price) || 0;
@@ -55,7 +47,7 @@ export default function ProductDetailClient({ product }) {
       {/* LEFT: Image gallery */}
       <div className="space-y-4">
         <div className="relative h-[60vh] md:h-[70vh] bg-gray-50 rounded-lg border overflow-hidden flex items-center justify-center">
-          {/* small "view" button */}
+
           <button
             onClick={() => setShowModal(true)}
             className="absolute right-3 top-3 z-20 bg-white/90 px-3 py-1 rounded-full text-sm shadow"
@@ -70,8 +62,7 @@ export default function ProductDetailClient({ product }) {
             width={1200}
             height={1200}
             className="object-contain max-h-full"
-            unoptimized
-            priority
+
           />
         </div>
 
@@ -82,9 +73,8 @@ export default function ProductDetailClient({ product }) {
               <button
                 key={i}
                 onClick={() => setMainIndex(i)}
-                className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border ${
-                  i === mainIndex ? "ring-2 ring-purple-600" : "border-gray-200"
-                }`}
+                className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border ${i === mainIndex ? "ring-2 ring-purple-600" : "border-gray-200"
+                  }`}
                 aria-label={`Show image ${i + 1}`}
               >
                 <Image
@@ -103,7 +93,7 @@ export default function ProductDetailClient({ product }) {
         {/* modal: large view */}
         {showModal && (
           <div
-            className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/70 mt-24 flex items-center justify-center p-4"
             role="dialog"
             aria-modal="true"
           >
@@ -132,29 +122,32 @@ export default function ProductDetailClient({ product }) {
       <div className="flex flex-col">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm text-gray-500 capitalize">
-              {product.category} • {product.brand}
+            <p className="text-xl text-gray-500 capitalize">
+              {product.brand} •     <Link href={product.abrand} > <span className="truncate hover:text-[var(--sec-accent-color)] ">{product.abrand}</span></Link>
             </p>
             <h1 className="text-3xl md:text-4xl font-extrabold mt-2">
               {product.name}
             </h1>
             <p className="mt-2 text-gray-600">{product.mainDes}</p>
           </div>
-
-          <div className="text-right">
-            {mrp > 0 && (
-              <div className="text-sm text-gray-400 line-through">{formatINR(mrp)}</div>
-            )}
-            <div className="text-2xl md:text-3xl font-bold">{formatINR(price)}</div>
-            {discountPercent > 0 && (
-              <div className="mt-2 inline-block text-xs bg-purple-600 text-white px-3 py-1 rounded-full">
-                -{discountPercent}%
-              </div>
-            )}
-          </div>
         </div>
 
-        {/* stock + seller */}
+        <div className="text-start mt-4 space-y-2 flex gap-2 items-center">
+          {mrp > 0 && (
+            <span className="text-sm text-gray-400 line-through">{formatINR(mrp)}</span>
+          )}
+          <span className="text-xl md:text-3xl font-bold">{formatINR(price)}</span>
+          {discountPercent > 0 && (
+            <span className=" bg-[var(--accent-color)] text-black text-xs px-2 py-1 rounded-lg shadow-md">
+              {discountPercent}% OFF
+            </span>
+          )}
+        </div>
+
+
+
+
+
         <div className="mt-4 flex items-center gap-6">
           <div>
             {product.stock > 0 ? (
@@ -165,34 +158,18 @@ export default function ProductDetailClient({ product }) {
               <span className="text-red-600 font-medium">Out of stock</span>
             )}
           </div>
-          <div className="text-sm text-gray-500">Seller: {product.admin || "—"}</div>
+
         </div>
 
         {/* qty + buttons */}
         <div className="mt-6 flex items-center gap-4">
           {/* quantity selector */}
-          <div className="flex items-center border rounded-lg overflow-hidden">
-            <button
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              className="px-3 py-2 text-lg"
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
-            <div className="px-4 py-2 font-medium min-w-[3rem] text-center">{qty}</div>
-            <button
-              onClick={() => setQty((q) => Math.min(product.stock || 9999, q + 1))}
-              className="px-3 py-2 text-lg"
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
-          </div>
+
 
           {/* actions (uses your existing components) */}
           <div className="flex gap-3">
-            <AddToCartButton productId={product._id} quantity={qty} />
-            <Buybtn productId={product._id} quantity={qty} />
+            <AddToCartButton productId={product._id} />
+            <Buybtn productId={product._id} />
           </div>
         </div>
 
@@ -224,20 +201,7 @@ export default function ProductDetailClient({ product }) {
             Copy link
           </button>
 
-          {shareUrl && (
-            <>
-              <Link
-                className="px-3 py-2 border rounded text-sm"
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                  shareUrl
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Share
-              </Link>
-            </>
-          )}
+
         </div>
       </div>
 
@@ -245,13 +209,13 @@ export default function ProductDetailClient({ product }) {
       <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t p-3 flex items-center justify-between z-40">
         <div>
           <div className="text-xs text-gray-500">Total</div>
-          <div className="font-semibold">{formatINR(price * qty)}</div>
+          <div className="font-semibold">{formatINR(price)}</div>
         </div>
         <div className="flex gap-2">
-          <AddToCartButton productId={product._id} quantity={qty} />
-          <Buybtn productId={product._id} quantity={qty} />
+          <AddToCartButton productId={product._id} />
+          <Buybtn productId={product._id} />
         </div>
       </div>
-    </article>
+    </article >
   );
 }
