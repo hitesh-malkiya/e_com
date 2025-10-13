@@ -21,7 +21,7 @@ import OrdercardPage from './OrdercardPage';
   return (
   
     <div>
-      <h1>hel haleyulo</h1>
+      
       {orders.map((cur) => (
         <OrdercardPage key={cur} id={cur} />
       ))}
