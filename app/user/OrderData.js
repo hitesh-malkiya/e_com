@@ -1,7 +1,7 @@
-import { getUser, getUserOrder } from '@/lib/getUserOrder';
-import axios from 'axios'
+import { getUser, } from '@/lib/getUserOrder';
+
 import React from 'react'
-import OrderCard from './OrderCard';
+
 import OrdercardPage from './OrdercardPage';
 
  async function OrderData({userName}) {
@@ -13,11 +13,8 @@ import OrdercardPage from './OrdercardPage';
   
 
   } catch (err) {
-  
     orders = [];
   }
-
-
   return (
   
     <div>

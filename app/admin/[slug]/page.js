@@ -64,6 +64,7 @@ export default async function Page({ searchParams, params }) {
   try {
     const res = await getorder(session.user.admin.userName);
    
+    console.log(session.user.admin);
     
     if(res.message === "error") {
         orders = [];
