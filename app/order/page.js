@@ -58,9 +58,9 @@ function Page({ searchParams }) {
 
     if (stock !== 0) {
       if (qty > stock) setQty(product.stock);
-      
+
       if (qty < 1) setQty(1);
-    } 
+    }
 
 
   }, [qty, stock]);
@@ -163,8 +163,23 @@ function Page({ searchParams }) {
       });
 
 
- 
-      
+
+
+      const orderPost = await axios.post('/api/orderPost', {
+        userName: admin,
+        orderId: response.data.order.id,
+        landmark: orderFormData.current.landmark.value || ""
+      });
+
+console.log(orderPost.data);
+
+
+
+      if (!orderPost.data.success) {
+        alert(" address not saved ")
+        return;
+      }
+
 
       const ok = await loadRazorpayScript();
       if (!ok) throw new Error("Razorpay SDK failed to load");
@@ -228,19 +243,6 @@ function Page({ searchParams }) {
           const result = await res.json();
 
 
-          const orderPost = await axios.post('/api/orderPost', {
-            userName: admin,
-            orderId: data.order.id,
-            landmark: orderFormData.current.landmark.value || ""
-          });
-      
-
-
-      if (!orderPost.data.success) {
-        alert(" address not saved ")
-        return;
-      }
-
           if (typeof window !== 'undefined') {
             localStorage.removeItem('productId');
             router.push('/user');
@@ -266,7 +268,7 @@ function Page({ searchParams }) {
     } catch (err) {
       setError(err?.message || 'Payment failed. Please try again.')
     } finally {
-      orderFormData.current.reset();
+
       setIsLoading(false)
     }
   }
@@ -387,7 +389,7 @@ function Page({ searchParams }) {
           <div className="text-lg font-semibold text-gray-900">
             Total Payable:{" "}
             <span className="text-2xl font-bold text-[var(--accent-color)]">
-              ₹{ qty==0 ? payAmount || 0 : payAmount* qty }
+              ₹{qty == 0 ? payAmount || 0 : payAmount * qty}
             </span>
           </div>
           <div className="flex items-center border rounded-lg overflow-hidden">
