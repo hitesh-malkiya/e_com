@@ -14,11 +14,9 @@ export async function GET(req) {
         console.log(id);
 
         await connectDB();
-        console.log(id , "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
-        
+    
         const order = await Product.findById(id)
 
-        console.log(order , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
         
         return NextResponse.json({ message: " true", data: order }, { status: 200 });
     } catch (err) {

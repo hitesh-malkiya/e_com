@@ -63,13 +63,14 @@ export default async function Page({ searchParams, params }) {
   let orders = [];
   try {
     const res = await getorder(session.user.admin.userName);
-   
-    console.log(session.user.admin);
+
     
     if(res.message === "error") {
         orders = [];
     } else {
           orders = res.data;
+          console.log(orders);
+          
     }
   } catch (err) {
     orders = [];

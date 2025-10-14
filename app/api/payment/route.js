@@ -106,7 +106,22 @@ export async function GET(params) {
 
 
     if (!id) {
-      return NextResponse.json({ message: "error" })
+
+      const admin = searchParams.get("admin")
+
+      if (!admin) {
+        return NextResponse.json({ message: "error" })
+      }
+      await connectDB()
+      const order = await Order.find({ userName: admin })
+      const data = order
+      if (!data) {
+        return NextResponse.json({ message: "error" })
+      }
+      if (data.length === 0) {
+        return NextResponse.json({ message: "error" })
+      }
+      return NextResponse.json({ data })
     }
     await connectDB()
     const order = await Order.findOne({ id })

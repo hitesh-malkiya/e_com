@@ -15,6 +15,18 @@ import OrdercardPage from './OrdercardPage';
   } catch (err) {
     orders = [];
   }
+
+
+
+  if(orders.length === 0) {     
+    return (
+      <div className='mt-24 text-center'>
+        <h2 className='text-2xl'>No Orders Found</h2>
+      </div>
+    )
+  }
+
+
   return (
   
     <div>
