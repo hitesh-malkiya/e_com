@@ -38,7 +38,7 @@ async function Categories({ searchParams }) {
   let products = [];
   try {
     const res = await getProducts(queryString);
-    console.log(res);
+ 
     
     if (res.message === "error") {
       products = [];

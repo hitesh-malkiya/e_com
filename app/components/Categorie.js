@@ -6,6 +6,7 @@ import { Buybtn } from './Buybtn';
 
 async function Categorie({categorieName , searchParams}) {
 
+console.log(categorieName);
 
   const tamp = await searchParams
     const queryString = new URLSearchParams(tamp).toString();
@@ -15,6 +16,7 @@ async function Categorie({categorieName , searchParams}) {
     try {
 
       const res = await getProductsSort(queryString,categorieName, 'category');
+      console.log(res.data);
       
       productsData = res?.data?.products || [];
 
