@@ -44,7 +44,7 @@ export default function HomeHero() {
 
         <div className="hero-btns mt-10 flex gap-6 justify-center">
 
-          <Button data="Explore Products" link="/products" />
+          <Button data="Explore Products" link="/product" />
 
           <Button data=" Register Your Brand" link="/admin" />
 

@@ -177,7 +177,7 @@ console.log(orderPost.data);
 
       if (!orderPost.data.success) {
         alert(" address not saved ")
-        return;
+      
       }else{
         alert(" address  saved ")
       }
