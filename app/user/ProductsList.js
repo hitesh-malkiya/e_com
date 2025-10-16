@@ -40,7 +40,7 @@ async function ProductsList({ queryStringURL, userName }) {
     }
 
     return (
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <section className="bg-white rounded-2xl shadow-xl p-8">
 
             {products.length === 0 ? (
                 <Noproduct data="yor card is amty" p="No products found in your cart." />
@@ -53,7 +53,7 @@ async function ProductsList({ queryStringURL, userName }) {
             )
 
             }
-        </div>
+        </section>
     )
 }
 

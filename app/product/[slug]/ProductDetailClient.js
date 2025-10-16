@@ -43,8 +43,8 @@ export default function ProductDetailClient({ product }) {
   };
 
   return (
-    <article className="grid md:grid-cols-2 gap-8 bg-white rounded-2xl p-6 shadow-md">
-      {/* LEFT: Image gallery */}
+    <section className="grid md:grid-cols-2 gap-8 bg-white rounded-2xl p-6 shadow-md">
+ 
       <div className="space-y-4">
         <div className="relative h-[60vh] md:h-[70vh] bg-gray-50 rounded-lg border overflow-hidden flex items-center justify-center">
 
@@ -122,9 +122,9 @@ export default function ProductDetailClient({ product }) {
       <div className="flex flex-col">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xl text-gray-500 capitalize">
+            <h3 className="text-xl text-gray-500 capitalize">
               {product.brand} •     <Link href={product.abrand} > <span className="truncate hover:text-[var(--sec-accent-color)] ">{product.abrand}</span></Link>
-            </p>
+            </h3>
             <h1 className="text-3xl md:text-4xl font-extrabold mt-2">
               {product.name}
             </h1>
@@ -216,6 +216,6 @@ export default function ProductDetailClient({ product }) {
           <Buybtn productId={product._id} />
         </div>
       </div>
-    </article >
+    </section >
   );
 }

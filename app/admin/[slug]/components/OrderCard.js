@@ -1,12 +1,50 @@
 "use client";
+
 import React, { useMemo } from "react";
-import { AddToCartButton } from "../components/AddToCartButton";
-import { Buybtn } from "../components/Buybtn";
+
 
 export default function OrderCard({ orderData, productData, trackingRaw }) {
   console.log({ orderData, productData, trackingRaw });
 
 
+ 
+  const handleDownload = async (type, shipmentId, orderId, shipmenOorder_id) => {
+    try {
+      // Prepare request body
+      const body = { type };
+      body.order_id = orderId,
+      body.shipment_id = shipmentId;
+      body.shipmenOorder_id = shipmenOorder_id;
+      // Call backend API
+      const res = await fetch("/api/shiprocket", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+
+ let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      console.log("Invalid JSON from server:", err);
+      alert("Server returned invalid response");
+      return;
+    }
+
+    if (data.url) {
+      window.open(data.url, "_blank"); // opens PDF in new tab
+    } else {
+      console.log("No URL returned:", data);
+      alert("Failed to generate document: No URL returned");
+    }
+  } catch (error) { 
+    console.log("Download error:", error);
+    alert("An error oc  curred while downloading the document");
+    
+  }
+
+  }
 
   /* Choose which example to show by default (replace with actual fetch result) */
 
@@ -99,11 +137,11 @@ export default function OrderCard({ orderData, productData, trackingRaw }) {
         {/* Header */}
         <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-800">
               Order #{orderData.id}
-            </h1>
+            </h3>
             <p className="text-sm text-gray-500">
-              Placed {new Date(orderData.createdAt).toLocaleString()}
+              Placed {new Date(orderData.createdAt).toLocaleString()} 
             </p>
           </div>
           <div className="flex items-center gap-4">
@@ -130,27 +168,44 @@ export default function OrderCard({ orderData, productData, trackingRaw }) {
           {/* Product card */}
           <div className="md:col-span-2 bg-white rounded-2xl shadow p-5">
             <div className="flex flex-col md:flex-row gap-4">
-              <img
-                src={productData.image}
-                alt={productData.name}
-                className="w-full md:w-48 h-48 object-contain rounded-lg border"
-              />
+
               <div className="flex-1">
-                <h1 className="text-lg font-semibold">{productData.name}</h1>
+                <h2 className="text-lg font-semibold">{productData.name}</h2>
                 <p className="text-sm text-gray-600 mt-2">{productData.mainDes}</p>
 
                 <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-gray-700">
-                  <div><h4 className="font-semibold">Brand: </h4>{productData.brand}</div>
-                  <div><h4 className="font-semibold">Category: </h4>{productData.category}</div>
+                  <div><span className="font-semibold">Brand: </span>{productData.brand}</div>
+                  <div><span className="font-semibold">Category: </span>{productData.category}</div>
                   <div><span className="font-semibold">Price: </span>₹{productData.price}</div>
                   <div><span className="font-semibold">Qty: </span>{orderData.quantity}</div>
                 </div>
 
                 <div className="mt-6 flex items-center gap-3">
-                 
-                    <AddToCartButton productId={productData._id} />
-                    <Buybtn productId={productData._id} />
-             
+
+                  <button
+                    className="px-2 py-1 bg-blue-500 text-white rounded text-xs mr-1"
+                    onClick={() =>
+                      handleDownload("label", orderData.shipment_id, orderData.id, orderData.shipmenOorder_id)
+                    }
+                  >
+                    Label
+                  </button>
+                  <button
+                    className="px-2 py-1 bg-green-500 text-white rounded text-xs mr-1"
+                    onClick={() =>
+                      handleDownload("manifest", orderData.shipment_id, orderData.id, orderData.shipmenOorder_id)
+                    }
+                  >
+                    Manifest
+                  </button>
+                  <button
+                    className="px-2 py-1 bg-purple-500 text-white rounded text-xs"
+                    onClick={() =>
+                      handleDownload("invoice", orderData.shipment_id, orderData.id, orderData.shipmenOorder_id)
+                    }
+                  >
+                    Invoice
+                  </button>
 
                 </div>
               </div>
@@ -188,11 +243,11 @@ export default function OrderCard({ orderData, productData, trackingRaw }) {
             </div>
 
             <div className="pt-4">
-              <h3 className="text-sm text-gray-500">Payment  Status: 
+              <h3 className="text-sm text-gray-500">Payment  Status:
                 <span className={` text-center text-gray-500 px-3 pb-1 rounded-full font-semibold text-sm ${orderData.paymentStatus === "success"
                   ? "bg-green-100 text-green-700"
                   : "bg-yellow-100 text-yellow-800"
-                }`}>  {orderData.paymentStatus}</span></h3>
+                  }`}>  {orderData.paymentStatus}</span></h3>
 
               <div className="mt-2 text-sm">
                 <div><span className="font-semibold">Method:</span> {orderData.paymentMethod}</div>

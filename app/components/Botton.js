@@ -40,7 +40,7 @@ export const Button = ({
             <button 
                 className={buttonStyles}
                 onClick={onClick}
-                disabled={disabled}
+                aria-disabled={disabled}
                 type={type}
             >
                 {data}
@@ -48,12 +48,11 @@ export const Button = ({
         )
     }
     
-    // Default link button
+    
     return (
-        <button className={buttonStyles} disabled={disabled}>
-            <Link href={link} className="w-full h-full flex items-center justify-center">
-                {data}
-            </Link>
-        </button>
+        <Link href={link} className={buttonStyles} aria-disabled={disabled}>
+      {data}
+    </Link>
+
     )
 }

@@ -21,6 +21,6 @@ export function SortSpan({dataName}) {
         router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false })
     }
     return (
-      <span onClick={()=> handleClick()} className="border-b-2 border-transparent hover:border-[var(--sec-accent-coor)] transition-colors duration-300 hover:text-[var(--sec-accent-coor)]">{dataName}</span>
+      <h4 onClick={()=> handleClick()} className="border-b-2 border-transparent hover:border-[var(--sec-accent-coor)] transition-colors duration-300 hover:text-[var(--sec-accent-coor)]">{dataName}</h4>
     )
   }

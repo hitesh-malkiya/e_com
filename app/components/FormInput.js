@@ -11,10 +11,11 @@ export default function FormInput({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
+      <label className="block text-sm font-medium text-[var(--text-color)] mb-2" htmlFor={name} >
         {label}{required ? ' *' : ''}
       </label>
       <input
+id={name}
         type={type}
         name={name}
         placeholder={placeholder}
@@ -26,4 +27,5 @@ export default function FormInput({
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   )
+  
 }

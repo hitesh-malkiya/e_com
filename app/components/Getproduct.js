@@ -43,17 +43,17 @@ function Getproduct(params) {
                 )}
                 {/* Discount Badge */}
                 {discountPercent > 0 && (
-                  <div className="absolute top-3 right-3 bg-[var(--accent-color)] text-black text-xs px-2 py-1 rounded-lg shadow-md">
+                  <span className="absolute top-3 right-3 bg-[var(--accent-color)] text-black text-xs px-2 py-1 rounded-lg shadow-md">
                     {discountPercent}% OFF
-                  </div>
+                  </span>
                 )}
               </Link>
 
               {/* Category & Admin */}
               <div className="flex items-center gap-2 text-[18px] text-gray-500">
-                <span className="truncate">{product.category}</span>
-                <span className="h-1 w-1 rounded-full bg-gray-300" />
-               <Link href={product.abrand} > <span className="truncate hover:text-[var(--sec-accent-color)] ">{product.abrand}</span></Link>
+                <h4 className="truncate">{product.category}</h4>
+                <span className="h-1 w-1 rounded-full bg-[var(--accent-color)]" />
+               <Link href={product.abrand} > <h4 className="truncate hover:text-[var(--sec-accent-color)] ">{product.abrand}</h4></Link>
               </div>
 
               {/* Product Name */}

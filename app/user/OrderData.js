@@ -20,21 +20,21 @@ import OrdercardPage from './OrdercardPage';
 
   if(orders.length === 0) {     
     return (
-      <div className='mt-24 text-center'>
+      <section className='mt-24 text-center'>
         <h2 className='text-2xl'>No Orders Found</h2>
-      </div>
+      </section>
     )
   }
 
 
   return (
   
-    <div>
-      
+    <section>
+      <h2 className='text-2xl font-bold mb-4 mt-24 text-center'>Your Orders</h2>
       {orders.map((cur) => (
         <OrdercardPage key={cur} id={cur} />
       ))}
-    </div>
+    </section>
   )
 }
 

@@ -5,22 +5,26 @@ import { useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import FormInput from '../components/FormInput'
 import { set } from "mongoose";
+import { Button } from "../components/Botton";
 
 
 function Adminregister() {
   const formData = useRef(null)
+  const [loadingR, setLoadingR] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingT, setLoadingT] = useState(false)
   const [message, setMessage] = useState("")
   const [errors, setErrors] = useState({})
   const router = useRouter();
   const [isTOken, setIsToken] = useState(false);
+  const [rmsg, setRmsg] = useState("");
   const [token, setToken] = useState("");
   const [tokenMessage, setTokenMessage] = useState("");
   const { data: session, status } = useSession();
 
 
-const [contactId, setContactId] = useState("");
-const [fundAccountId, setFundAccountId] = useState("");
+  const [contactId, setContactId] = useState("");
+  const [fundAccountId, setFundAccountId] = useState("");
 
   // Client-side validation
   const validateForm = (data) => {
@@ -112,7 +116,7 @@ const [fundAccountId, setFundAccountId] = useState("");
       const response = await axios.post('/api/admin', data)
 
 
-      if (response?.data?.message ) {
+      if (response?.data?.message) {
         setMessage("Admin registered successfully!")
 
 
@@ -138,6 +142,7 @@ const [fundAccountId, setFundAccountId] = useState("");
 
   const handlegetToken = async (e) => {
     try {
+      setLoadingT(true)
       const response = await axios.post('https://apiv2.shiprocket.in/v1/external/auth/login', {
         email: formData.current.shiprocketEmail.value,
         password: formData.current.shiprocketPassword.value
@@ -146,38 +151,42 @@ const [fundAccountId, setFundAccountId] = useState("");
       setToken(await response.data.token);
       setIsToken(true);
       setTokenMessage("Token fetched successfully!");
-
+      loadingT(false)
     } catch (err) {
+      setLoadingT(false)
       setTokenMessage("Failed to fetch token.");
     }
 
   }
-const handelRazorpay = async () => {
-  try {
-    const formEl = formData.current;
-  const response = await axios.post("/api/admin/razoyrpay", {
-      name: formEl.RfullName.value,
-      email: formEl.Remail.value,
-      contact: formEl.Rcontact.value, 
-      reference_id: formEl.reference_id.value,
-      ifsc: formEl.ifsc.value,
-      account_number: formEl.account_number.value
-    });
-    
-    if(response.data.error){
-     alert( response.data.error);
-    
+  const handelRazorpay = async () => {
+    try {
+      setLoadingR(true)
+      const formEl = formData.current;
+      const response = await axios.post("/api/admin/razoyrpay", {
+        name: formEl.RfullName.value,
+        email: formEl.Remail.value,
+        contact: formEl.Rcontact.value,
+        reference_id: formEl.reference_id.value,
+        ifsc: formEl.ifsc.value,
+        account_number: formEl.account_number.value
+      });
+
+      if (response.data.error) {
+        setLoadingR(false)
+
+        rmsg(response.data.error);
+
+      }
+      setLoadingR(false)
+      setFundAccountId(response.data.fund_account.id);
+      setContactId(response.data.fund_account.contact_id);
+      setRmsg("Razorpay account created successfully.");
+
+    } catch (err) {
+      setLoadingR(false)
+      setRmsg("Failed to create Razorpay account.");
     }
-
-setFundAccountId(response.data.fund_account.id);
-setContactId(response.data.fund_account.contact_id);
-alert("Razorpay account created successfully.");
-
-  }  catch (err) {
-
- alert( err.message);
   }
-}
 
 
 
@@ -202,9 +211,9 @@ alert("Razorpay account created successfully.");
 
   return (
     <div className="bg-[var(--bg-color)] rounded-2xl shadow-xl p-8 mb-12">
-      <h3 className="text-2xl font-semibold text-[var(--text-color)] mb-6">
+      <h1 className="text-2xl font-semibold text-[var(--text-color)] mb-6">
         Register New Admin
-      </h3>
+      </h1>
 
 
 
@@ -257,14 +266,14 @@ alert("Razorpay account created successfully.");
             type="url"
             placeholder="Enter logo image URL"
           />
-        
+
         </div>
 
 
         <div className="border-t pt-6">
-          <h4 className="text-lg font-medium text-[var(--text-color)] mb-4">
+          <h3 className="text-lg font-medium text-[var(--text-color)] mb-4">
             razorpay Details
-          </h4>
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormInput
               label=" Name as par your bank account"
@@ -303,47 +312,52 @@ alert("Razorpay account created successfully.");
               placeholder="Enter IFSC code"
               required
               error={errors.password}
-            />  
+            />
             <FormInput
               label="Account Number"
-              name="account_number"   
+              name="account_number"
               type="number"
               placeholder="Enter Account Number"
               required
               error={errors.password}
             />
-     <button   type="button" onClick={handelRazorpay} className="px-2 py-1 bg-blue-500 text-white rounded text-xs mr-1" >
-                    Create razorpay account
-                  </button>
+            <p>{rmsg}</p>
           </div>
+
         </div>
+        <div onClick={handelRazorpay} className="flex justify-end">
+
+          <Button type="button" data={`${loadingR ? 'Create razorpay account...' : 'Create razorpay account'}`} disabled={loadingR} className="mt-4">
+          </Button>
+        </div>
+
 
 
 
 
 
         <div className="border-t pt-6">
-          <h4 className="text-lg font-medium text-[var(--text-color)] mb-4">
+          <h3 className="text-lg font-medium text-[var(--text-color)] mb-4">
             Shiprocket Details
-          </h4>
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+            <FormInput label="Shiprocket Email" name="shiprocketEmail" type="email" placeholder="Enter Shiprocket Email" />
+            <FormInput label="Shiprocketp password" name={"shiprocketPassword"} type="text" placeholder="Enter Shiprocket password" />
+                <p>{tokenMessage}</p>
           </div>
-          <FormInput label="Shiprocket Email" name="shiprocketEmail" type="email" placeholder="Enter Shiprocket Email" />
-          <FormInput label="Shiprocketp password" name={"shiprocketPassword"} type="text" placeholder="Enter Shiprocket password" />
-          <p>{tokenMessage}</p>
+
+      
         </div>
         <div onClick={handlegetToken} className="flex justify-end">
-          <button type="button" disabled={loading} className="mt-4">
-            {loading ? 'geting token...' : 'get token'}
-          </button>
+          <Button type="button" data={`${loadingT ? 'geting token...' : 'get token'}`} disabled={loadingT} className="mt-4">
+          </Button>
         </div>
 
         {/* Address Section */}
         <div className="border-t pt-6">
-          <h4 className="text-lg font-medium text-[var(--text-color)] mb-4">
-            Address Information (Optional)
-          </h4>
+          <h3 className="text-lg font-medium text-[var(--text-color)] mb-4">
+            Address Information 
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
               <FormInput

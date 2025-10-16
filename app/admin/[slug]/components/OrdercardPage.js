@@ -2,7 +2,7 @@
 import { getOrder, getProduct, trackOrder } from '@/lib/getUserOrder';
 import React from 'react'
 import OrderCard from './OrderCard';
-import Loading from '../loading';
+
 
 async function OrdercardPage({ id }) {
 
@@ -41,9 +41,9 @@ async function OrdercardPage({ id }) {
 
 
   return (
-
+    <div>
       <OrderCard orderData={odata} productData={pdata} trackingRaw={tdata} />
-
+    </div>
   )
 }
 

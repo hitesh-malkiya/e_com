@@ -52,6 +52,7 @@ function DeletCard({ productId, data }) {
         }
     }
 
+    
     return (
         <Button
         size='small'

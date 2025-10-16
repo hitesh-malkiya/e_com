@@ -8,7 +8,7 @@ function Header({userName , isAdmin}) {
 
 
   return (
-    <div className="flex justify-around items-center mb-12">
+    <header className="flex justify-around items-center mb-12">
     
     <div className="flex items-center space-x-4">
       <span className="text-sm text-gray-600">
@@ -28,7 +28,7 @@ function Header({userName , isAdmin}) {
       <h1 className="text-2xl font-bold text-gray-800">
         <Link href={isAdmin ? `/admin/${userName}` : '/admin'} >{isAdmin ? ` Dashboard`: 'Register Your Brand'} </Link> </h1>
     </div>
-  </div>
+  </header>
   )
 }
 

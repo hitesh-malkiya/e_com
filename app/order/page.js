@@ -176,10 +176,10 @@ console.log(orderPost.data);
 
 
       if (!orderPost.data.success) {
-        alert(" address not saved ")
+        alert("address not saved ")
       
       }else{
-        alert(" address  saved ")
+        alert("address  saved ")
       }
 
 

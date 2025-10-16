@@ -7,12 +7,12 @@ function Header({userName}) {
 
 
   return (
-    <div className=" mb-12">
+    <header className=" mb-12">
     
    <div className=' flex justify-around items-center text-center'>
-      <span className="text-2xl text-[var(--text-color)] font-[600] ">
+      <h1 className="text-2xl text-[var(--text-color)] font-[600] ">
       Welcome, to admin dasbord {userName || 'gust'}
-      </span>
+      </h1>
       
       <button
         onClick={() => signOut({ callbackUrl: '/' })}
@@ -22,7 +22,7 @@ function Header({userName}) {
         Logout
       </button>
       </div>
-  </div>
+  </header>
   )
 }
 

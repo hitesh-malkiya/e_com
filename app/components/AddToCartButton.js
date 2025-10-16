@@ -48,6 +48,7 @@ export const AddToCartButton = ({ productId}) => {
         }
     }
 
+    
     return (
         <Button
             data={loading ? 'Adding...' : 'Add to Cart'}

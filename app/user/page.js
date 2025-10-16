@@ -29,7 +29,7 @@ export default async function Page({ searchParams, params }) {
   if (!session?.user?.userName) {
     redirect('/log-in');
     return (
-     <Loading />
+      <Loading />
     )
   }
 
@@ -39,9 +39,10 @@ export default async function Page({ searchParams, params }) {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <Header userName={session?.user?.name} isAdmin={session?.user?.isAdmin} />
-
-       <ProductsList queryStringURL={queryString} userName={session?.user?.userName} />
-        <OrderData userName={session?.user?.userName} />
+        <main>
+          <ProductsList queryStringURL={queryString} userName={session?.user?.userName} />
+          <OrderData userName={session?.user?.userName} />
+        </main>
       </div>
     </div>
   )

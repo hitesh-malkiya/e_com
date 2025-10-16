@@ -10,6 +10,7 @@ export default function Providers({ children }) {
       {/* <Provider store={store}> */}
         {children}
       {/* </Provider> */}
+      
     </SessionProvider>
   )
 }

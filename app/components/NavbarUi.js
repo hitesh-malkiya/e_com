@@ -14,7 +14,7 @@ function NavbarUi({ session = false, logoSrc = '/image/profile-default.png', adm
     setIsMenuOpen(!isMenuOpen);
   };
   return (
-    <section className="">
+ 
       <nav className='grid md:grid-cols-[1fr_1fr] sm:grid-cols-[1fr_0.3fr] grid-cols-[1fr_0.5fr] items-center justify-start md:gap-8 gap-2 fixed top-0 left-0 pl-2 md:pr-8 right-0 bg-[var(--bg-color)] pr-3 text-[var(--text-color)] z-[100]'>
         <div className="pl-3 flex justify-items-center justify-between items-center ">
           <Image
@@ -97,7 +97,7 @@ function NavbarUi({ session = false, logoSrc = '/image/profile-default.png', adm
           </div>
         </div>
       </nav>
-    </section>
+   
   )
 }
 export default NavbarUi

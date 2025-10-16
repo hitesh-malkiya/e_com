@@ -8,6 +8,7 @@ export default function HomePage({ searchParams }) {
     <div className="min-h-screen bg-gray-50">
       <Home />
       <Categories searchParams={searchParams} />
+      
     </div>
   );
 }

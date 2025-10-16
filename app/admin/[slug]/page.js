@@ -6,8 +6,11 @@ import FormPage from './FormPage';
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Adminregister from "../Adminregister";
 import { getorder } from "@/lib/orderGet";
-import Order from "@/app/components/Order";
+
 import Link from "next/link";
+import Order from "./components/Order";
+import Loading from "./loading";
+import { redirect } from "next/navigation";
 
 export default async function Page({ searchParams, params }) {
   // Get slug from params
@@ -48,14 +51,12 @@ export default async function Page({ searchParams, params }) {
   if (
     !session.user.admin ||
     !session.user.admin.isAdmin ||
-    session.user.admin.userName !== slug
+    session.user.admin.userNammain== slug
   ) {
+      redirect("/admin");
     return (
-      <div className="min-h-screen bg-gradient-to-br mt-24 bg-[var(--sec-bg-color)] py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <Adminregister />
-        </div>
-      </div>
+  
+     <Loading/>
     );
   }
 
@@ -77,13 +78,15 @@ export default async function Page({ searchParams, params }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br mt-24 bg-[var(--sec-bg-color)] py-8 px-4">
+    <main className="min-h-screen bg-gradient-to-br mt-24 bg-[var(--sec-bg-color)] py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <Header userName={session?.user?.name} />
+        <section>
         <FormPage slug={slug} abrand={abrand}/>
         <Order orders={orders} />
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

@@ -33,6 +33,7 @@ export const Buybtn = ({ productId }) => {
         }
     }
 
+    
     // Don't render until mounted to prevent hydration mismatch
     if (!mounted) {
         return (

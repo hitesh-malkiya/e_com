@@ -3,45 +3,7 @@ import React from "react";
 
 const Order = ({ orders }) => {
 
-  
-  const handleDownload = async (type, shipmentId, orderId, shipmenOorder_id) => {
-    try {
-      // Prepare request body
-      const body = { type };
-      body.order_id = orderId,
-      body.shipment_id = shipmentId;
-      body.shipmenOorder_id = shipmenOorder_id;
-      // Call backend API
-      const res = await fetch("/api/shiprocket", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-
- let data;
-    try {
-      data = await res.json();
-    } catch (err) {
-      console.log("Invalid JSON from server:", err);
-      alert("Server returned invalid response");
-      return;
-    }
-
-    if (data.url) {
-      window.open(data.url, "_blank"); // opens PDF in new tab
-    } else {
-      console.log("No URL returned:", data);
-      alert("Failed to generate document: No URL returned");
-    }
-  } catch (error) { 
-    console.log("Download error:", error);
-    alert("An error oc  curred while downloading the document");
-    
-  }
-
-  }
-
+ 
   if (orders.length === 0) {
     return (
       <div className="p-6 mt-24">
@@ -90,7 +52,7 @@ const Order = ({ orders }) => {
                   03/10/2025
                 </td>
                 <td className="border px-3 py-2">
-                  {/* <button
+                  <button
                     className="px-2 py-1 bg-blue-500 text-white rounded text-xs mr-1"
                     onClick={() =>
                       handleDownload("label", order.shipment_id , order.id , order.shipmenOorder_id)
@@ -105,7 +67,7 @@ const Order = ({ orders }) => {
                     }
                   >
                     Manifest
-                  </button> */}
+                  </button>
                   <button
                     className="px-2 py-1 bg-purple-500 text-white rounded text-xs"
                     onClick={() =>
@@ -125,3 +87,5 @@ const Order = ({ orders }) => {
 };
 
 export default Order;
+
+

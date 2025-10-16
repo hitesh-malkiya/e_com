@@ -30,8 +30,9 @@ if (productsData.message === "error") {
   productsData = [];
 }
 if (productsData.length === 0) {
-  return null; // Don't render the category if there are no products
+  return null; 
 }
+
 
   return (
     <div>

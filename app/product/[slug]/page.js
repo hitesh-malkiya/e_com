@@ -29,16 +29,16 @@ const queryString = new URLSearchParams(tamp).toString();
   }
 
   return (
-    <div className="mt-24 max-w-7xl mx-auto px-4 space-y-10">
+    <main className="mt-24 max-w-7xl mx-auto px-4 space-y-10">
       {productsData.map((product) => (
         <ProductDetailClient key={product._id} product={product} />
       ))}
 
-      {/* Related category / suggestions — reused component */}
+     
       <Categorie
         categorieName={productsData[0]?.category}
         searchParams={searchParams}
       />
-    </div>
+    </main>
   );
 }

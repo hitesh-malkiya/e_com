@@ -7,9 +7,9 @@ async function Page({ searchParams }) {
 
   
   return (
-    <div className=' mt-24'>
+    <main className=' mt-24'>
 <Categories searchParams={queryString} />
-      </div>
+      </main>
   )
 }
 export default Page

@@ -12,4 +12,5 @@ function Noproduct({data , p}) {
   )
 }
 
+
 export default Noproduct

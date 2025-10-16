@@ -136,10 +136,11 @@ function FormPage({ slug, abrand }) {
 
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
+            <label htmlFor='category' className="block text-sm font-medium text-[var(--text-color)] mb-2">
               Category
             </label>
             <select
+            id='category'
               name='category'
               required
               className="w-full px-4 py-3 border border-[var(--accent-color)] rounded-lg  focus:border-transparent transition duration-200"
@@ -156,7 +157,7 @@ function FormPage({ slug, abrand }) {
 
         {/* More Details */}
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-[var(--text-color)] mb-2">
+          <label  className="block text-sm font-medium text-[var(--text-color)] mb-2">
             More Details
           </label>
           <div className="space-y-3">
@@ -237,11 +238,11 @@ export default FormPage
 export function Inputs({ type, names, data }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-[var(--text-color)]  mb-2">
+      <label htmlFor={names} className="block text-sm font-medium text-[var(--text-color)]  mb-2">
         {data}
       </label>
       <input
-
+        id={names}
         type={type}
         placeholder={`Enter ${data} `}
         name={names}

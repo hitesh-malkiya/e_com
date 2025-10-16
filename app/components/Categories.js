@@ -7,6 +7,7 @@ import Categorie from './Categorie';
 import Getproduct from './Getproduct';
 import { AddToCartButton } from './AddToCartButton';
 import { Buybtn } from './Buybtn';
+import Noproduct from './Noproduct';
 
 
 async function Categories({ searchParams }) {
@@ -16,7 +17,6 @@ async function Categories({ searchParams }) {
     "T-Shirts",
     "Formal Shirts",
     "Casual Shirts",
-    "Jeans",
     "Casual pants",
     "Formal pants",
     "Track Pants",
@@ -38,6 +38,7 @@ async function Categories({ searchParams }) {
   let products = [];
   try {
     const res = await getProducts(queryString);
+
  
     
     if (res.message === "error") {
@@ -68,7 +69,7 @@ async function Categories({ searchParams }) {
       </div>
       <div>
         {queryString ? <>
-      {  products.length === 0 ? <div className='text-center text-2xl py-16'>No products found</div>: <> 
+      {  products.length === 0 ? <Noproduct data={"no product found"}/>: <> 
  
   
           <h3 className="py-[1lh] w-full text-2xl text-center after:content-[''] after:block after:w-[80px] after:h-[5px] after:mx-auto after:mt-[10px] after:rounded-[10px] after:bg-[var(--sec-accent-color)]">{products[0].category}</h3>

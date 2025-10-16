@@ -12,30 +12,30 @@ function Page() {
     const formData = useRef(null);
     const [btnactiv, setBtnactiv] = useState(false)
     const [message, setMessage] = useState('')
-    
-  
 
 
 
 
 
-    
 
 
 
-useEffect(() => {
-    if (session?.user?.userName) {
-  router.push(`/user`);
 
-    }
-}, [session, router]);
+
+
+    useEffect(() => {
+        if (session?.user?.userName) {
+            router.push(`/user`);
+
+        }
+    }, [session, router]);
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setBtnactiv(true)
         setMessage('')
-        
+
         try {
             const response = await axios.post('/api/user/setup', {
                 email: session?.user?.email,
@@ -46,9 +46,9 @@ useEffect(() => {
             router.push(`/user`);
             setBtnactiv(false)
             setMessage('Username and password set successfully!')
-       
 
-            
+
+
         } catch (error) {
             setMessage(error.response?.data?.message || 'An error occurred')
             setBtnactiv(false)
@@ -56,12 +56,12 @@ useEffect(() => {
     }
 
 
-    if(session?.user?.userName){
-        
-        return(
-          <Loading/>
+    if (session?.user?.userName) {
+
+        return (
+            <Loading />
         )
-      }
+    }
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
             <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full mx-4">
@@ -80,10 +80,11 @@ useEffect(() => {
 
                 <form ref={formData} onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor='userName' className="block text-sm font-medium text-gray-700 mb-2">
                             Username
                         </label>
                         <input
+                            id='userName'
                             type="text"
                             placeholder='Enter your username'
                             name='userName'
@@ -95,10 +96,11 @@ useEffect(() => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor='password' className="block text-sm font-medium text-gray-700 mb-2">
                             Password
                         </label>
                         <input
+                            id='password'
                             type='password'
                             placeholder='Enter your password'
                             name='password'
