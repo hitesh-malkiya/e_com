@@ -17,7 +17,7 @@ export default function NotFound() {
       <div>
         <h1 style={{ fontSize: 28, marginBottom: 8 }}>Page not found</h1>
         <p style={{ color: '#666', marginBottom: 16 }}>
-          The page you are looking for doesn't exist or was moved.
+         {" "}
         </p>
 
         <Link
