@@ -52,6 +52,8 @@ function Page({ searchParams }) {
     "Mahuva",
     "Modasa"
   ];
+
+  
   const [stock, setStock] = useState(0);
   const [qty, setQty] = useState(1);
   useEffect(() => {
@@ -72,6 +74,12 @@ function Page({ searchParams }) {
 
   const dataGet = useCallback(async (id) => {
     try {
+
+   
+        if (!user) {
+            alert('login first ')
+            return
+        }
       const tamp = await searchParams
       const queryString = new URLSearchParams(tamp).toString();
       console.log(queryString, id, 'id');
