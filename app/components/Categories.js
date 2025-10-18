@@ -1,4 +1,10 @@
 
+"use client";
+
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategoryProducts } from "@/redux/categorySlice";
+
 
 import React from 'react'
 import { SortSpan } from './SortSpan'
@@ -10,45 +16,31 @@ import { Buybtn } from './Buybtn';
 import Noproduct from './Noproduct';
 
 
-async function Categories({ searchParams }) {
+ function Categories({ searchParams }) {
+
+  const dispatch = useDispatch();
+  const { productsByCategory } = useSelector((state) => state.categories);
 
   const categorieName = [
 
     "T-Shirts",
     "Formal Shirts",
-    "Casual Shirts",
-    "Casual pants",
-    "Formal pants",
-    "Track Pants",
-    "Cargos ",
-    "Jackets",
-    "Blazers",
-    "Kurtis",
-    "Chaniya Choli",
-    "Party Dresses",
-    "Dresses",
-    "Tops",
-    "Night Dresses",
-    "Sweaters",
-    "Jeans",
+
   ];
 
-  const tamp = await searchParams
+  const tamp =  searchParams
   const queryString = new URLSearchParams(tamp).toString();
-  let products = [];
-  try {
-    const res = await getProducts(queryString);
 
- 
-    
-    if (res.message === "error") {
-      products = [];
-    }
-    products = res?.data?.products || [];
-  } catch (err) {
-    products = [];
-  }
-  
+  useEffect(() => {
+    categorieName.forEach((name) => {
+      if (!productsByCategory[name]) {
+        dispatch(fetchCategoryProducts({ categorieName: name, queryString }));
+      }
+    });
+  }, []);
+
+
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -68,34 +60,23 @@ async function Categories({ searchParams }) {
         </div>
       </div>
       <div>
-        {queryString ? <>
-      {  products.length === 0 ? <Noproduct data={"no product found"}/>: <> 
- 
-  
-          <h3 className="py-[1lh] w-full text-2xl text-center after:content-[''] after:block after:w-[80px] after:h-[5px] after:mx-auto after:mt-[10px] after:rounded-[10px] after:bg-[var(--sec-accent-color)]">{products[0].category}</h3>
-          <Getproduct productData={products}  >
-            <AddToCartButton />
-            <Buybtn />
-          </Getproduct>
-          </>
-}
-        </> : (
-          <>
+       
             {
-              categorieName.map((item, index) => (
-                <Categorie key={index} categorieName={item} searchParams={searchParams} />
+              categorieName.map((name) => (
+                <Categorie
+                  key={name}
+                  categorieName={name}
+                  productData={productsByCategory[name] || []}
+                />
               ))
             }
 
-          </>
-        )}
       </div>
     </section>
   )
 }
 
 export default Categories
-
 
 
 

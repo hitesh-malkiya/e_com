@@ -1,14 +1,10 @@
 import React from 'react';
 
-export const metadata = {
-  title: 'Category | E-Commerce',
-  description: 'Browse products by category',
-};
 
-export default function CategoryLayout({ children}) {
+export default function CategoryLayout({ children }) {
   return (
-
-    {children}
-
+    <div>
+      {children}
+    </div>
   );
 }

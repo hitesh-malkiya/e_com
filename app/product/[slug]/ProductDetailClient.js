@@ -7,7 +7,7 @@ import { AddToCartButton } from "@/app/components/AddToCartButton";
 import { Buybtn } from "@/app/components/Buybtn";
 
 export default function ProductDetailClient({ product }) {
-  // images array fallback
+
   const images = Array.isArray(product.images) && product.images.length
     ? product.images
     : product.image
@@ -35,7 +35,7 @@ export default function ProductDetailClient({ product }) {
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl || window.location.href);
-      // small UI feedback — simple alert so no extra libs
+   
       alert("Link copied to clipboard.");
     } catch {
       alert("Could not copy link.");

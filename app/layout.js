@@ -56,36 +56,32 @@ export const metadata = {
     images: ["/image/logo.png"],
   },
   verification: {
-    google: "google-site-verification-code", 
+    google: "google-site-verification-code",
   },
-  category: "E-Commerce",
-  themeColor: "#ffffff",
+  category: "E-Commerce"
+
 };
 
 
 export default function RootLayout({ children }) {
+  console.log("1 layout");
+  
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      
         <link rel="icon" href="/image/logo.png" />
-     
-
-
       </head>
       <body className="min-h-screen max-w-[1500px]">
         <Providers>
-
           <Navbar />
-            {children}
+          {children}
           <Footer />
         </Providers>
-
         <Analytics />
         <SpeedInsights />
-         <script
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
